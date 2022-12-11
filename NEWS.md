@@ -1,3 +1,17 @@
+# scrutiny 0.2.3
+
+-   New `audit()` methods for the output of `audit_seq()` and `audit_total_n()`.
+
+-   New `restore_zeros_df()` function to easily restore trailing zeros in all numeric-like columns in a data frame.
+
+-   New `seq_length()` function to extend or shorten linear sequences.
+
+-   Bugfixes in the `is_seq_*()` functions.
+
+-   Some possible corner case issues in `split_by_parens()` are now prevented.
+
+-   Internal changes for compatibility with purrr 1.0.0 and tidyselect 1.2.0.
+
 # scrutiny 0.2.2
 
 This is a patch for CRAN compliance.

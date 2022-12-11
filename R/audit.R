@@ -3,9 +3,10 @@
 #'
 #' @description `audit()` is an S3 generic to follow up on those scrutiny
 #'   functions that perform tests on data frames. It summarizes results of those
-#'   tests and presents the summaries in a tibble. `audit_seq()` and
-#'   `audit_total_n()` summarize the results of functions that end on `_seq` and
-#'   `_total_n`, respectively.
+#'   tests and presents the summaries in a tibble.
+#'
+#'   `audit_seq()` and `audit_total_n()` summarize the results of functions that
+#'   end on `_seq` and `_total_n`, respectively.
 #'
 #'   Below is a list of functions that return objects with classes for which
 #'   there are `audit()` methods. This means you can run `audit()` on the output
@@ -45,10 +46,16 @@
 #' @export
 #'
 #' @examples
-#' # For GRIM-testing:
+#' # For basic GRIM-testing:
 #' pigs1 %>%
 #'   grim_map() %>%
 #'   audit()
+#'
+#' # For GRIM-testing with
+#' # dispersed inputs:
+#' pigs1 %>%
+#'   grim_map_seq() %>%
+#'   audit_seq()
 #'
 #' # For detecting duplicates:
 #' pigs4 %>%
@@ -121,12 +128,8 @@ audit_seq <- function(data) {
     x
   }
 
-  modify_to_length <- function(x) {
-    if (is.logical(x)) {
-      x <- as.character(x)
-    }
-    x[is.na(x) | is.null(x)] <- NA
-    purrr::modify(x, length)
+  map_to_length <- function(x) {
+    purrr::map(x, length)
   }
 
   # Prepare endings of the `diff_*` columns:
@@ -141,7 +144,7 @@ audit_seq <- function(data) {
   cols_hits <- df_nested %>%
     dplyr::mutate(dplyr::across(
       .cols = everything(),
-      .fns = modify_to_length,
+      .fns = map_to_length,
       .names = "hits_{.col}"
     )) %>%
     dplyr::select(-all_of(colnames(df_nested))) %>%
@@ -183,9 +186,20 @@ audit_seq <- function(data) {
 
   consistency <- data_rev_tested$consistency
 
+  cols_hits <- dplyr::mutate(cols_hits, dplyr::across(
+    .cols = where(is.character),
+    .fns = as.numeric
+  ))
+
+  cols_diff <- dplyr::mutate(cols_diff, dplyr::across(
+    .cols = where(is.character),
+    .fns = as.numeric
+  ))
+
   out <- data_rev %>%
     dplyr::mutate(consistency, hits_total) %>%
-    dplyr::bind_cols(cols_hits, cols_diff)
+    dplyr::bind_cols(cols_hits, cols_diff) %>%
+    add_class("scr_audit_seq")
 
   return(out)
 }
@@ -231,7 +245,10 @@ audit_total_n <- function(data) {
 
   out <- data %>%
     reverse_map_total_n() %>%
-    dplyr::mutate(hits_total, hits_forth, hits_back, scenarios_total, hit_rate)
+    dplyr::mutate(
+      hits_total, hits_forth, hits_back, scenarios_total, hit_rate
+    ) %>%
+    add_class("scr_audit_total_n")
 
   return(out)
 }

@@ -47,7 +47,9 @@ of dispersed values. Default is \code{NULL}, i.e., no constant values.}
 \code{constant} column in the output tibble. If \code{NULL} (the default), \code{constant}
 will go to the right of \code{n_change}.}
 
-\item{...}{Arguments passed down to \code{grimmer_map()}.}
+\item{...}{Arguments passed down to \code{grimmer_map()}. \emph{(NOTE: Don't use the
+\code{items} argument. It currently contains a bug that will be fixed in
+scrutiny's next CRAN release.)}}
 }
 \value{
 A tibble with these columns:

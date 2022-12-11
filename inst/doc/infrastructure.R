@@ -130,7 +130,7 @@ is_seq_linear(x = c(NA, NA, 1, 2, NA, 4, NA))
 is_seq_dispersed(x = c(3:7), from = 5)
 
 # `NA` because it might be dispersed from 5,
-# depending on the true values behind the `NA`s:
+# depending on the values hidden behind the `NA`s:
 is_seq_dispersed(x = c(NA, 3:7, NA), from = 5)
 is_seq_dispersed(x = c(NA, NA, 3:7, NA, NA), from = 5)
 

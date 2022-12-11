@@ -288,7 +288,7 @@ manage_key_colnames <- function(data, arg, description = NULL) {
   arg_name <- deparse(substitute(arg))
   if (!is.null(arg)) {
     # data <- dplyr::rename(data, "scr_temp_placeholder" := arg)  # {{ arg_name }} := arg
-    data <- dplyr::rename(data, {{ arg_name }} := arg)
+    data <- dplyr::rename(data, {{ arg_name }} := all_of(arg))
   } else if (!arg_name %in% colnames(data)) {
     if (is.null(description)) {
       msg_this_col <- "One"
@@ -321,9 +321,9 @@ manage_key_colnames_list_el <- function(data, key_arg) {
 #'
 #' @description Within a consistency test mapper function, it may become
 #'   necessary to unpack a column resulting from a basic `*_scalar()` testing
-#'   function. That will be the case if the a `show_*` argument of the mapper
-#'   function is `TRUE`, and the `*_scalar()` function returns a list of values,
-#'   not just a single value.
+#'   function. That will be the case if a `show_*` argument of the mapper
+#'   function like `show_rec` in `grim_map()` is `TRUE`, and the `*_scalar()`
+#'   function returns a list of values, not just a single value.
 #'
 #'   At the point where such as list is stored in a data frame column (most
 #'   likely `"consistency"`), call `unnest_consistency_cols()` to unnest the
@@ -377,4 +377,31 @@ unnest_consistency_cols <- function(results, col_names, index = FALSE,
 
   return(results)
 }
+
+
+
+summarize_audit_special <- function(data, selector) {
+
+  selector <- rlang::enexprs(selector)
+
+  fn_names <- c(  "mean",      "sd",      "median", "min", "max", "na_count")
+  fns      <- list(mean, stats::sd, stats::median,   min,   max,   na_count)
+
+  out <- tibble::tibble()
+
+  for (fn in fns) {
+    temp <- dplyr::summarise(data, dplyr::across(
+      .cols = c(!!!selector),
+      .fns  = fn,
+      na.rm = TRUE
+    ))
+    out <- dplyr::bind_rows(out, temp)
+  }
+
+  term <- names(out)
+  out <- tibble::as_tibble(t(out), .name_repair = ~ fn_names)
+
+  dplyr::mutate(out, term, .before = 1)
+}
+
 

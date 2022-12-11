@@ -35,7 +35,9 @@
 #' @param n_max Numeric. Maximal group size. Default is `NULL`, i.e., no
 #'   maximum.
 #' @inheritParams disperse_total
-#' @param ... Arguments passed down to `grimmer_map()`.
+#' @param ... Arguments passed down to `grimmer_map()`. *(NOTE: Don't use the
+#'   `items` argument. It currently contains a bug that will be fixed in
+#'   scrutiny's next CRAN release.)*
 
 #' @include function-map-total-n.R
 #'

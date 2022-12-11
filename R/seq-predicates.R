@@ -59,6 +59,22 @@ is_seq_descending_basic <- function(x) {
 is_seq_basic <- function(x, tolerance = .Machine$double.eps^0.5,
                          test_linear = TRUE, test_special = NULL,
                          min_length = NULL, args_other = NULL) {
+
+  if (!is.null(test_special) && test_special == "dispersed") {
+    # Without the `force()` call, the function may return `FALSE` early, even if
+    # `from` was not supplied:
+    force(args_other$from)
+
+    # A dispersed sequence requires one central value, so the number of elements
+    # in `x` must be odd:
+    if (is_even(length(x))) {
+      return(FALSE)
+    }
+    # Save the unmodified `x` for a test that is conducted if `x` contains one
+    # or more `NA` elements:
+    x_orig <- x
+  }
+
   if (all(is.na(x))) {
     return(NA)
   }
@@ -73,17 +89,6 @@ is_seq_basic <- function(x, tolerance = .Machine$double.eps^0.5,
 
   if (length(x) == 1) {
     return(TRUE)
-  }
-
-  if (!is.null(test_special) && test_special == "dispersed") {
-    # A dispersed sequence requires one central value, so the number of elements
-    # in `x` must be odd:
-    if (is_even(length(x))) {
-      return(FALSE)
-    }
-    # Save the unmodified `x` for a test that is conducted if `x` contains one
-    # or more `NA` elements:
-    x_orig <- x
   }
 
   x_has_na <- any(is.na(x))
@@ -113,6 +118,10 @@ is_seq_basic <- function(x, tolerance = .Machine$double.eps^0.5,
       }
     }
 
+    # Used within the for loop below to check whether the step size needs to be
+    # negative:
+    x_is_descending_basic <- is_seq_descending_basic(x[!is.na(x)])
+
     for (i in seq_along(x)) {
       if (is.na(x[i])) {
         index_lower <- 1
@@ -129,6 +138,12 @@ is_seq_basic <- function(x, tolerance = .Machine$double.eps^0.5,
 
         step <- step_size(c(seq_start, seq_end))
 
+        # Descending sequences require a negative step size:
+        if (x_is_descending_basic || seq_start > seq_end) {
+          step <- -step
+        }
+
+        # Look here for `seq.default()` errors:
         seq_replacement <- seq(from = seq_start, to = seq_end, by = step)
 
         # Remove the first and the last element because these correspond to the
@@ -222,31 +237,30 @@ is_seq_basic <- function(x, tolerance = .Machine$double.eps^0.5,
 #'   sides per value pair. By default (`test_linear = TRUE`), these functions
 #'   also test for linearity, like `is_seq_linear()`.
 #'
-#' `NA` elements of `x` are handled in a nuanced way. See *Value* section here
+#' `NA` elements of `x` are handled in a nuanced way. See *Value* section below
 #' and the examples in `vignette("infrastructure")`, section *NA handling*.
 
 #' @param x Numeric or coercible to numeric. Vector to be tested.
 #' @param from Numeric or coercible to numeric. Only in `is_seq_dispersed()`. It
 #'   will test whether `from` is at the center of `x`, and if every pair of
 #'   other values is equidistant to it.
-#' @param test_linear Boolean. Should `x` be tested for linearity, as in
-#'   `is_seq_linear()`? Default is `TRUE`.
-#' @param tolerance Numeric. Tolerance of comparison between numbers such as the
-#'   difference between individual `x` values and the minimal difference in
-#'   linearity testing. Default is circa 0.000000015 (1.490116e-08), as in
+#' @param test_linear Boolean. In functions other than `is_seq_linear()`, should
+#'   `x` also be tested for linearity? Default is `TRUE`.
+#' @param tolerance Numeric. Tolerance of comparison between numbers when
+#'   testing. Default is circa 0.000000015 (1.490116e-08), as in
 #'   `dplyr::near()`.
 
-#' @return Boolean. If `x` contains at least one `NA` value, the functions
-#'   return `NA` or `FALSE`, depending on the context:
+#' @return A single Boolean value. If `x` contains at least one `NA` element,
+#'   the functions return either `NA` or `FALSE`:
 #'   - If all elements of `x` are `NA`, the functions return `NA`.
 #'   - If some but not all elements are `NA`, they check if `x` *might* be a
-#'   linear sequence; i.e., if it is linear after the `NA`s were replaced by
-#'   appropriate values. If so, they return `NA`; otherwise, they return
-#'   `FALSE`.
+#'   sequence of the kind in question: Is it a linear (and / or ascending, etc.)
+#'   sequence after the `NA`s were replaced by appropriate values? If so, they
+#'   return `NA`; otherwise, they return `FALSE`.
 
 #' @seealso `validate::is_linear_sequence()`, which is much like
 #'   `is_seq_linear()` but more permissive with `NA` values. It comes with some
-#'   other features, such as support for date-times.
+#'   additional features, such as support for date-times.
 
 #' @export
 
@@ -255,23 +269,22 @@ is_seq_basic <- function(x, tolerance = .Machine$double.eps^0.5,
 #' is_seq_linear(x = 3:7)
 #' is_seq_linear(x = c(3:7, 8))
 #'
-#' # ...but this isn't:
+#' # ...but these aren't:
 #' is_seq_linear(x = c(3:7, 9))
+#' is_seq_linear(x = c(10, 3:7))
 #'
 #' # All other `is_seq_*()` functions
-#' # test for linearity by default
-#' # besides conducting their
-#' # individual tests:
-#' is_seq_ascending(x = c(1, 2, 5))
-#' is_seq_ascending(x = c(1, 2, 5), test_linear = FALSE)
+#' # also test for linearity by default:
+#' is_seq_ascending(x = c(2, 7, 9))
+#' is_seq_ascending(x = c(2, 7, 9), test_linear = FALSE)
 #'
 #' is_seq_descending(x = c(9, 7, 2))
 #' is_seq_descending(x = c(9, 7, 2), test_linear = FALSE)
 #'
-#' is_seq_dispersed(x = c(2, 3 ,5, 7, 8), from = 5)
-#' is_seq_dispersed(x = c(2, 3 ,5, 7, 8), from = 5, test_linear = FALSE)
+#' is_seq_dispersed(x = c(2, 3, 5, 7, 8), from = 5)
+#' is_seq_dispersed(x = c(2, 3, 5, 7, 8), from = 5, test_linear = FALSE)
 #'
-#' # These fail the respective
+#' # These fail their respective
 #' # individual test even
 #' # without linearity testing:
 #' is_seq_ascending(x = c(1, 7, 4), test_linear = FALSE)
@@ -282,7 +295,7 @@ is_seq_basic <- function(x, tolerance = .Machine$double.eps^0.5,
 
 
 is_seq_linear <- function(x, tolerance = .Machine$double.eps^0.5) {
-  is_seq_basic(x, tolerance)
+  is_seq_basic(x, tolerance, test_linear = TRUE)
 }
 
 
@@ -328,10 +341,6 @@ is_seq_dispersed <- function(x, from, test_linear = TRUE,
 # Helper, not exported:
 is_seq_dispersed_basic <- function(x, from,
                                    tolerance = .Machine$double.eps^0.5) {
-
-  # Without `force(from)`, the function may return `FALSE` early, even if `from`
-  # was not supplied:
-  force(from)
 
   if (is_even(length(x))) {
     return(FALSE)

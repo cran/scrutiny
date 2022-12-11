@@ -81,7 +81,7 @@ function_map_total_n_proto <- function(.fun, .reported, .reported_orig, .dir,
       ) %>%
       tidyr::unnest_wider(reported) %>%
       dplyr::rename_with(
-        .fn   = ~ dplyr::all_of(reported_orig),
+        .fn   = ~ reported_orig,
         .cols = 1:dplyr::all_of(reported_n_vars)
       ) %>%
       dplyr::mutate(
@@ -308,6 +308,16 @@ function_map_total_n <- function(.fun, .reported, .name_test,
                                  .n_min = 1, .n_max = NULL,
                                  .constant = NULL,
                                  .constant_index = NULL) {
+
+  force(.fun)
+  force(.reported)
+  force(.name_test)
+  force(.name_class)
+  force(.dispersion)
+  force(.n_min)
+  force(.n_max)
+  force(.constant)
+  force(.constant_index)
 
   # Throw error if `n` itself was named as a reported statistic:
   if ("n" %in% .reported) {
