@@ -15,7 +15,7 @@ library(scrutiny)
  schlim_scalar <- function(y, n) {
    y <- as.numeric(y)
    n <- as.numeric(n)
-   y / 3 > n
+   all(y / 3 > n)
  }
 
 schlim_scalar(y = 30, n = 4)

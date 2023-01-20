@@ -42,7 +42,7 @@ The only solution I know of is to work with strings --- namely, strings that can
 
 Several R packages help to extract tables from PDF. I recommend tabulizer (not currently on CRAN; see [installation notes](https://docs.ropensci.org/tabulizer/#installation)). There are also the [pdftables](https://expersso.r-universe.dev/ui#package:pdftables) and [pdftools](https://ropensci.r-universe.dev/ui#package:pdftools) packages.
 
-Using tabulizer requires [Java](https://www.java.com) to be installed. When it works well, tabulizer is a great tool for importing tables quickly and efficiently. It automatically captures values as strings, so trailing zeros are treated just like other digits.
+Using tabulizer requires Java to be installed. When it works well, tabulizer is a great tool for importing tables quickly and efficiently. It automatically captures values as strings, so trailing zeros are treated just like other digits.
 
 However, tabulizer might sometimes struggle, especially with older PDF files. That is most likely the fault of the PDF format itself because it has no inbuilt support for tables, so any effort to extract them faces serious ambiguities. (See below, *Replace column names by row values*, for a solution to one such issue.)
 
@@ -119,14 +119,14 @@ A convenient way to restore trailing zeros in a data frame is `restore_zeros_df(
 ```{r}
 iris <- as_tibble(iris)
 iris %>% 
-  restore_zeros_df(.width = 3)
+  restore_zeros_df(width = 3)
 ```
 
-Specify columns as you would in `dplyr::select()`:
+Specify columns mostly like you would in `dplyr::select()`:
 
 ```{r}
 iris %>% 
-  restore_zeros_df(starts_with("Sepal"), .width = 3)
+  restore_zeros_df(starts_with("Sepal"), width = 3)
 ```
 
 ## Split strings by parentheses
@@ -152,14 +152,14 @@ Optionally, transform these values into a more useful format:
 
 ```{r}
 flights2 %>% 
-  split_by_parens(.transform = TRUE)
+  split_by_parens(transform = TRUE)
 ```
 
 From here, you can call `debit_map()` almost right away (supposing you deal with binary distributions' means and standard deviations):
 
 ```{r}
 flights2 %>% 
-  split_by_parens(.transform = TRUE) %>% 
+  split_by_parens(transform = TRUE) %>% 
   dplyr::mutate(n = 80) %>% 
   debit_map()
 ```
@@ -172,14 +172,14 @@ The defaults for column name suffixes are (1) `"x"` for the part before the pare
 
 ```{r}
 flights2 %>% 
-  split_by_parens(.col1 = "beta", .col2 = "se")
+  split_by_parens(end1 = "beta", end2 = "se")
 ```
 
 These suffixes become column names if `.transform` is set to `TRUE`:
 
 ```{r}
 flights2 %>% 
-  split_by_parens(.col1 = "beta", .col2 = "se", .transform = TRUE)
+  split_by_parens(end1 = "beta", end2 = "se", transform = TRUE)
 
 ```
 

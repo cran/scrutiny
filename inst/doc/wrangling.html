@@ -372,11 +372,10 @@ tabulizer (not currently on CRAN; see <a href="https://docs.ropensci.org/tabuliz
 notes</a>). There are also the <a href="https://expersso.r-universe.dev/ui#package:pdftables">pdftables</a>
 and <a href="https://ropensci.r-universe.dev/ui#package:pdftools">pdftools</a>
 packages.</p>
-<p>Using tabulizer requires <a href="https://www.java.com">Java</a> to
-be installed. When it works well, tabulizer is a great tool for
-importing tables quickly and efficiently. It automatically captures
-values as strings, so trailing zeros are treated just like other
-digits.</p>
+<p>Using tabulizer requires Java to be installed. When it works well,
+tabulizer is a great tool for importing tables quickly and efficiently.
+It automatically captures values as strings, so trailing zeros are
+treated just like other digits.</p>
 <p>However, tabulizer might sometimes struggle, especially with older
 PDF files. That is most likely the fault of the PDF format itself
 because it has no inbuilt support for tables, so any effort to extract
@@ -470,7 +469,7 @@ to explicitly state the desired mantissa length:</p>
 that are coercible to numeric (factors don’t count):</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>iris <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(iris)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>iris <span class="sc">%&gt;%</span> </span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">restore_zeros_df</span>(<span class="at">.width =</span> <span class="dv">3</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">restore_zeros_df</span>(<span class="at">width =</span> <span class="dv">3</span>)</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 150 × 5</span></span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Sepal.Length Sepal.Width Petal.Length Petal.Width Species</span></span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt;        &lt;chr&gt;       &lt;chr&gt;        &lt;chr&gt;       &lt;fct&gt;  </span></span>
@@ -485,9 +484,10 @@ that are coercible to numeric (factors don’t count):</p>
 <span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9 4.400        2.900       1.400        0.200       setosa </span></span>
 <span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 4.900        3.100       1.500        0.100       setosa </span></span>
 <span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 140 more rows</span></span></code></pre></div>
-<p>Specify columns as you would in <code>dplyr::select()</code>:</p>
+<p>Specify columns mostly like you would in
+<code>dplyr::select()</code>:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>iris <span class="sc">%&gt;%</span> </span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">restore_zeros_df</span>(<span class="fu">starts_with</span>(<span class="st">&quot;Sepal&quot;</span>), <span class="at">.width =</span> <span class="dv">3</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">restore_zeros_df</span>(<span class="fu">starts_with</span>(<span class="st">&quot;Sepal&quot;</span>), <span class="at">width =</span> <span class="dv">3</span>)</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 150 × 5</span></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Sepal.Length Sepal.Width Petal.Length Petal.Width Species</span></span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt;        &lt;chr&gt;              &lt;dbl&gt;       &lt;dbl&gt; &lt;fct&gt;  </span></span>
@@ -530,7 +530,7 @@ manually teasing them apart, call <code>split_by_parens()</code>:</p>
 <span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 0.15    0.35     0.57        0.16</span></span></code></pre></div>
 <p>Optionally, transform these values into a more useful format:</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>flights2 <span class="sc">%&gt;%</span> </span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">split_by_parens</span>(<span class="at">.transform =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">split_by_parens</span>(<span class="at">transform =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 8 × 3</span></span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   .origin   x     sd   </span></span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;</span></span>
@@ -546,7 +546,7 @@ manually teasing them apart, call <code>split_by_parens()</code>:</p>
 (supposing you deal with binary distributions’ means and standard
 deviations):</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>flights2 <span class="sc">%&gt;%</span> </span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">split_by_parens</span>(<span class="at">.transform =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">split_by_parens</span>(<span class="at">transform =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">n =</span> <span class="dv">80</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">debit_map</span>()</span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 8 × 12</span></span>
@@ -579,7 +579,7 @@ inside of them. However, this won’t fit for all data presented like
 <code>5.22 (0.73)</code>. Override the defaults by specifying
 <code>.col1</code> and/or <code>.col2</code>:</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>flights2 <span class="sc">%&gt;%</span> </span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">split_by_parens</span>(<span class="at">.col1 =</span> <span class="st">&quot;beta&quot;</span>, <span class="at">.col2 =</span> <span class="st">&quot;se&quot;</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">split_by_parens</span>(<span class="at">end1 =</span> <span class="st">&quot;beta&quot;</span>, <span class="at">end2 =</span> <span class="st">&quot;se&quot;</span>)</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 4 × 4</span></span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   drone_beta drone_se selfpilot_beta selfpilot_se</span></span>
 <span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;      &lt;chr&gt;    &lt;chr&gt;          &lt;chr&gt;       </span></span>
@@ -590,7 +590,7 @@ inside of them. However, this won’t fit for all data presented like
 <p>These suffixes become column names if <code>.transform</code> is set
 to <code>TRUE</code>:</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>flights2 <span class="sc">%&gt;%</span> </span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">split_by_parens</span>(<span class="at">.col1 =</span> <span class="st">&quot;beta&quot;</span>, <span class="at">.col2 =</span> <span class="st">&quot;se&quot;</span>, <span class="at">.transform =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">split_by_parens</span>(<span class="at">end1 =</span> <span class="st">&quot;beta&quot;</span>, <span class="at">end2 =</span> <span class="st">&quot;se&quot;</span>, <span class="at">transform =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 8 × 3</span></span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   .origin   beta  se   </span></span>
 <span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;</span></span>

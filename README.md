@@ -1,7 +1,9 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/lhdjung/scrutiny/workflows/R-CMD-check/badge.svg)](https://github.com/lhdjung/scrutiny/actions)
+[<img
+src="https://github.com/lhdjung/scrutiny/actions/workflows/R-CMD-check.yaml/badge.svg"
+alt="R-CMD-check" />](https://github.com/lhdjung/scrutiny/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/lhdjung/scrutiny/branch/main/graph/badge.svg)](https://app.codecov.io/gh/lhdjung/scrutiny?branch=main)
 
@@ -102,7 +104,7 @@ Test percentages instead of means:
     #> 5 0.681   150 FALSE        0.85
     #> 6 0.554   150 FALSE        0.85
 
-You can choose how the means are reconstructed for testing — here,
+You can choose how the means are reconstructed for testing — below,
 rounded up from 5. When visualizing results, the plot will adjust
 automatically. Blue dots are consistent values, red dots are
 inconsistent ones:
@@ -142,7 +144,6 @@ data:
     #> 7 0.12  0.33   1683 TRUE        up_or_d…   0.325 TRUE      0.335 TRUE      0.115
     #> # … with 1 more variable: x_upper <dbl>, and abbreviated variable names
     #> #   ¹​sd_lower, ²​sd_incl_lower, ³​sd_upper, ⁴​sd_incl_upper
-    #> # ℹ Use `colnames()` to see all variable names
 
     pigs3 %>% 
       debit_map() %>% 

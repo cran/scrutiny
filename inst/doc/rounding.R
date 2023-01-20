@@ -74,7 +74,7 @@ even2  # No symmetry here...
 mean(vec2)
 mean(up2)
 mean(down2)
-mean(even2)  # ... and the mean is biased downward!
+mean(even2)  # ... and the mean is slightly biased downward!
 
 
 vec3 <- c(
@@ -82,14 +82,10 @@ vec3 <- c(
   1.55, 1.65, 1.75, 1.85, 1.95
 )
 
-# This seems fine...
-vec3 %>% 
-  round(1)
-
-# ...but this doesn't:
-vec3 %>% 
-  `+`(1) %>% 
-  round(1)
+# No bias here, though:
+round(vec3, 1)
+mean(vec3)
+mean(round(vec3, 1))
 
 ## -----------------------------------------------------------------------------
 unround(x = "8.0")

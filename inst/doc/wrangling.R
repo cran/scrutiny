@@ -54,11 +54,11 @@ vec %>%
 ## -----------------------------------------------------------------------------
 iris <- as_tibble(iris)
 iris %>% 
-  restore_zeros_df(.width = 3)
+  restore_zeros_df(width = 3)
 
 ## -----------------------------------------------------------------------------
 iris %>% 
-  restore_zeros_df(starts_with("Sepal"), .width = 3)
+  restore_zeros_df(starts_with("Sepal"), width = 3)
 
 ## -----------------------------------------------------------------------------
 flights2 <- tribble(
@@ -74,21 +74,21 @@ flights2 %>%
 
 ## -----------------------------------------------------------------------------
 flights2 %>% 
-  split_by_parens(.transform = TRUE)
+  split_by_parens(transform = TRUE)
 
 ## -----------------------------------------------------------------------------
 flights2 %>% 
-  split_by_parens(.transform = TRUE) %>% 
+  split_by_parens(transform = TRUE) %>% 
   dplyr::mutate(n = 80) %>% 
   debit_map()
 
 ## -----------------------------------------------------------------------------
 flights2 %>% 
-  split_by_parens(.col1 = "beta", .col2 = "se")
+  split_by_parens(end1 = "beta", end2 = "se")
 
 ## -----------------------------------------------------------------------------
 flights2 %>% 
-  split_by_parens(.col1 = "beta", .col2 = "se", .transform = TRUE)
+  split_by_parens(end1 = "beta", end2 = "se", transform = TRUE)
 
 
 ## -----------------------------------------------------------------------------
