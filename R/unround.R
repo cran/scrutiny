@@ -5,7 +5,7 @@ rounding_bounds_scalar <- function(rounding, x_num, d_var, d) {
 
   # Manage the two rounding procedures that depend on the sign of the input
   # number, rounding with truncation and "anti-truncation":
-  if (rounding %in% c("trunc", "anti_trunc")) {
+  if (any(rounding == c("trunc", "anti_trunc"))) {
     rounding_orig <- rounding
     if (x_num > 0) {
       rounding <- "trunc_x_greater"
@@ -15,19 +15,18 @@ rounding_bounds_scalar <- function(rounding, x_num, d_var, d) {
       rounding <- "trunc_x_is_0"
     }
 
-    if (rounding_orig %in% "anti_trunc") {
+    if (any(rounding_orig == "anti_trunc")) {
       rounding <- paste0("anti_", rounding)
     }
 
-    out <- switch(rounding,    #     (1)              (2)               (3)    (4)
+    return(switch(rounding,    #     (1)              (2)               (3)    (4)
         "trunc_x_greater"      = list(x_num,           x_num + (2 * d), "<=",  "<"),
         "trunc_x_less"         = list(x_num - (2 * d), x_num,           "<",  "<="),
         "trunc_x_is_0"         = list(x_num - (2 * d), x_num + (2 * d), "<",   "<"),
         "anti_trunc_x_greater" = list(x_num - (2 * d), x_num,           "<=",  "<"),
         "anti_trunc_x_less"    = list(x_num,           x_num + (2 * d), "<=",  "<"),
         "anti_trunc_x_is_0"    = list(NA,        NA,        NA,   NA)
-    )
-    return(out)
+    ))
   }
 
   # This switch-statement is evaluated for all other rounding procedures:

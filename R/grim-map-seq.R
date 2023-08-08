@@ -48,6 +48,9 @@
 #'   - `diff_n`, `diff_n_up`, and `diff_n_down` do the same for `n`.
 #'
 #'   Call `audit()` following `audit_seq()` to summarize results even further.
+#'   It's mostly self-explaining, but `na_count` and `na_rate` are the number
+#'   and rate of times that a difference could not be computed because of a lack
+#'   of corresponding hits within the `dispersion` range.
 
 #' @return A tibble (data frame) with detailed test results.
 
@@ -68,6 +71,26 @@
 #' # can be more important than the raw results:
 #' out %>%
 #'   audit_seq()
+
+
+# # Example input (for manual testing):
+#
+# data <- pigs1
+# x <- NULL
+# n <- NULL
+# var <- Inf
+# dispersion <- 1:5
+# out_min <- "auto"
+# out_max <- NULL
+# include_reported <- FALSE
+# include_consistent <- FALSE
+#
+# name_test <- "GRIM"
+# name_fun <- "grim_map"
+# name_class <- NULL
+# args_disabled <- NULL
+# reported <- c("x", "n")
+# fun <- grim_map
 
 
 grim_map_seq <- function_map_seq(

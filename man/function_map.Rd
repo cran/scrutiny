@@ -12,7 +12,8 @@ function_map(
   .args_disabled = NULL,
   .col_names = NULL,
   .col_control = NULL,
-  .col_filler = NULL
+  .col_filler = NULL,
+  ...
 )
 }
 \arguments{
@@ -46,6 +47,8 @@ columns named in \code{.col_names} will be displayed.}
 \item{.col_filler}{(Experimental) Optionally, a vector specifying the values
 of \code{.col_names} columns in rows where the \verb{*_scalar()} function only
 returned the \code{consistency} value.}
+
+\item{...}{These dots must be empty.}
 }
 \value{
 A factory-made function with these arguments:
@@ -67,8 +70,8 @@ column-identifying arguments derived from \code{.reported}.
 \code{function_map()} creates new basic mapper functions for
 consistency tests, such as \code{grim_map()} or \code{debit_map()}.
 
-For context, see \code{vignette("consistency-tests")}, section \emph{Creating mappers
-with \code{function_map()}}.
+For context, see \code{vignette("consistency-tests")}, section \emph{Creating basic
+mappers with \code{function_map()}}.
 }
 \details{
 The output tibble returned by the factory-made function will inherit

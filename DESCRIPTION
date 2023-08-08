@@ -1,6 +1,6 @@
 Package: scrutiny
 Title: Error Detection in Science
-Version: 0.2.4
+Version: 0.3.0
 Authors@R: c(
     person(given = "Lukas",
            family = "Jung",
@@ -21,19 +21,19 @@ License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.3
-Imports: cli, dplyr, glue, magrittr, methods, purrr, rlang (>= 1.0.2),
-        stringr, tibble
+Imports: cli, dplyr, glue, lifecycle, magrittr, methods, purrr, rlang
+        (>= 1.0.2), stringr, tibble
 Collate: 'is-numeric-like.R' 'import-reexport.R' 'utils.R'
         'mapper-function-helpers.R' 'audit-cols-minimal.R' 'audit.R'
-        'before-inside-parens.R' 'function-factory-helpers.R'
-        'round-ceil-floor.R' 'round.R' 'reround.R' 'unround.R'
-        'sd-binary.R' 'decimal-places.R' 'debit-table.R' 'debit.R'
-        'grim.R' 'function-map.R' 'grimmer.R' 'grimmer-map.R'
-        'duplicate-detect.R' 'debit-map.R' 'restore-zeros.R'
-        'seq-decimal.R' 'manage-extra-cols.R' 'grim-map.R' 'data-doc.R'
-        'data-frame-predicates.R' 'function-map-seq.R'
-        'debit-map-seq.R' 'disperse.R' 'function-map-total-n.R'
-        'debit-map-total-n.R' 'debit-plot.R'
+        'baseline-consistency-tests.R' 'before-inside-parens.R'
+        'function-factory-helpers.R' 'round-ceil-floor.R' 'round.R'
+        'reround.R' 'unround.R' 'sd-binary.R' 'decimal-places.R'
+        'debit-table.R' 'debit.R' 'grim.R' 'function-map.R' 'grimmer.R'
+        'grimmer-map.R' 'duplicate-detect.R' 'debit-map.R'
+        'restore-zeros.R' 'seq-decimal.R' 'manage-extra-cols.R'
+        'grim-map.R' 'data-doc.R' 'data-frame-predicates.R'
+        'function-map-seq.R' 'debit-map-seq.R' 'disperse.R'
+        'function-map-total-n.R' 'debit-map-total-n.R' 'debit-plot.R'
         'duplicate-count-colpair.R' 'duplicate-count.R'
         'grim-explain.R' 'grim-granularity.R' 'grim-map-seq.R'
         'grim-map-total-n.R' 'grim-plot.R' 'grim-stats.R'
@@ -42,14 +42,14 @@ Collate: 'is-numeric-like.R' 'import-reexport.R' 'utils.R'
         'method-debit-map.R' 'method-detect.R'
         'method-dup-count-colpair.R' 'method-dup-count.R'
         'method-grim-map.R' 'method-grim-sequence.R'
-        'method-grimmer-map.R' 'reround-to-fraction.R'
+        'method-grimmer-map.R' 'method-tally.R' 'reround-to-fraction.R'
         'reverse-map-seq.R' 'reverse-map-total-n.R'
         'rivets-perfect-mean-sd.R' 'rivets-plot-cols.R'
         'rivets-plot-lines.R' 'rivets-t-test.R' 'rivets_new.R'
-        'rounding-bias.R' 'row-to-colnames.R' 'seq-disperse.R'
-        'seq-length.R' 'seq-predicates.R' 'split-by-parens.R'
-        'subset-superset.R' 'utils-pipe.R' 'utils-tidy-eval.R'
-        'write-doc-audit.R'
+        'rounding-bias.R' 'row-to-colnames.R' 'scrutiny-package.R'
+        'seq-disperse.R' 'seq-length.R' 'seq-predicates.R'
+        'split-by-parens.R' 'subset-superset.R' 'utils-pipe.R'
+        'utils-tidy-eval.R' 'write-doc-audit.R'
 Suggests: corrr, covr, devtools, ellipsis, ggplot2, ggrepel, janitor,
         knitr, rmarkdown, roxygen2, stats, testthat (>= 3.0.0), tidyr,
         tidyselect
@@ -60,8 +60,8 @@ URL: https://lhdjung.github.io/scrutiny/,
         https://github.com/lhdjung/scrutiny/
 BugReports: https://github.com/lhdjung/scrutiny/issues
 NeedsCompilation: no
-Packaged: 2023-01-20 20:33:16 UTC; lukasjung
+Packaged: 2023-08-08 08:19:28 UTC; lukasjung
 Author: Lukas Jung [aut, cre],
   Aurélien Allard [ctb]
 Repository: CRAN
-Date/Publication: 2023-01-20 21:00:02 UTC
+Date/Publication: 2023-08-08 09:30:03 UTC

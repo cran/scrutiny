@@ -5,10 +5,14 @@ utils::globalVariables(c(
   ".", "where", "desc", "all_of", "contains", "everything", "x", "items",
   "frac", "distance", "both_consistent", "fun", "var", "dispersion", "out_min",
   "out_max", "include_reported", "n", "times", "value", "name", "setNames",
-  "rounding", "case", "n_sum", "V1", "consistency", "ratio", "scr_index_case",
+  "rounding", "case", "n_sum", "consistency", "ratio", "scr_index_case",
   "dust", "starts_with", "value_duplicated", "variable", "sd_lower",
   "sd_incl_lower", "sd_upper", "sd_incl_upper", "x_lower", "x_upper",
-  "dupe_count", "fn_name"
+  "dupe_count", "fun_name",
+  # Added after rewriting the function factories using `rlang::new_function()`:
+  "!!", "constant", "constant_index", "include_consistent", "n_max", "n_min",
+  # Added for `function_duplicate_cols()`, which uses `rlang::new_function()`:
+  "colname_end", "ignore", "numeric_only"
 ))
 
 
@@ -266,25 +270,8 @@ censor <- function(x, left, right) {
 #'
 #' @noRd
 add_class <- function(x, new_class) {
-  class(x) <- c(new_class, class(x))
-  x
+  `class<-`(x, value = c(new_class, class(x)))
 }
-
-
-
-#' Remove any `NA` elements
-#'
-#' Mapped within `row_to_colnames()`.
-#'
-#' @param x Vector.
-#'
-#' @return `x` but without any `NA` elements.
-#'
-#' @noRd
-remove_na <- function(x) {
-  x[!is.na(x)]
-}
-
 
 
 
@@ -477,7 +464,7 @@ check_length_or_null <- function(x, l) {
 #'
 #' @noRd
 check_type <- function(x, t) {
-  if (!typeof(x) %in% t) {
+  if (!any(typeof(x) == t)) {
     msg_name <- deparse(substitute(x))
     if (length(t) == 1L) {
       msg_object <- "be of type"
@@ -511,6 +498,26 @@ check_class <- function(x, cl) {
     cli::cli_abort(c(
       "!" = "`{msg_name}` must inherit class \"{cl}\".",
       "x" = "It doesn't."
+    ))
+  }
+}
+
+
+
+#' Check whether an object is a tibble
+#'
+#' Note: This assumes the name of `x` within the user-calles function is `data`.
+#'
+#' @param x A user-supplied data frame.
+#'
+#' @return Boolean (length 1).
+#'
+#' @noRd
+check_tibble <- function(x) {
+  if (!tibble::is_tibble(x)) {
+    cli::cli_abort(c(
+      "!" = "`data` must be a tibble.",
+      "i" = "Convert it with `tibble::as_tibble()`."
     ))
   }
 }
@@ -634,11 +641,10 @@ step_size <- function(x) {
 manage_string_output_seq <- function(out, from, string_output, digits) {
   if (string_output == "auto") {
     if (is.character(from)) {
-      out <- restore_zeros(out, width = digits)
+      return(restore_zeros(out, width = digits))
     } else {
-      out <- methods::as(out, typeof(from))
+      return(methods::as(out, typeof(from)))
     }
-    return(out)
   } else if (!is.logical(string_output)) {
     if (is.character(string_output)) {
       string_output <- paste0("\"", string_output, "\"")
@@ -654,7 +660,7 @@ manage_string_output_seq <- function(out, from, string_output, digits) {
   } else if (typeof(from) != "character") {
     out <- methods::as(out, typeof(from))
   }
-  return(out)
+  out
 }
 
 
@@ -685,8 +691,7 @@ commas_and <- function(x) {
     and <- ", and "
   }
   out <- stringr::str_flatten(x[-length(x)], collapse = collapse)
-  out <- paste0(out, and, x[length(x)])
-  return(out)
+  paste0(out, and, x[length(x)])
 }
 
 
@@ -809,26 +814,6 @@ check_type_numeric_like <- function(x) {
 
 
 
-#' Test if numeric-like vectors contain at least some decimal places
-#'
-#' For numeric-like `x` inputs (as determined by `is_numeric_like()`),
-#' `has_decimals_if_numeric_like()` checks if at least one element of `x` has at
-#' least one decimal place. If so, or if `x` is not numeric-like, the function
-#' returns `TRUE`. Otherwise, it returns `FALSE`.
-#'
-#' @param x Object to test.
-#' @param sep Separator between the integer and decimal parts. Passed on to
-#'   `decimal_places()`. Default is `"\\."`, a decimal point.
-#'
-#' @return Boolean (length 1).
-#'
-#' @noRd
-has_decimals_if_numeric_like <- function(x, sep = "\\.") {
-  !is_numeric_like(x) || !all(decimal_places(x, sep = sep) == 0L)
-}
-
-
-
 #' Interpolate the index case
 #'
 #' @description This function expects an `x` vector like the one described
@@ -896,10 +881,11 @@ index_case_interpolate <- function(x, index_case_only = TRUE,
   out <- methods::as(out, typeof(x_orig))
 
   if (is.character(out)) {
-    out <- restore_zeros(out)
+    restore_zeros(out)
+  } else {
+    out
   }
 
-  return(out)
 }
 
 
@@ -1357,23 +1343,6 @@ dustify <- function(x) {
 
 
 
-#' Count `NA` elements
-#'
-#' Mapped within `summarize_audit_special()`.
-#'
-#' @param x Vector.
-#' @param ... The dots are merely pro forma; their purpose is to swallow up the
-#'   `na.rm = TRUE` specification in a for loop with `dplyr::across()`.
-#'
-#' @return Integer (length 1).
-#'
-#' @noRd
-na_count <- function(x, ...) {
-  length(x[is.na(x)])
-}
-
-
-
 #' Remove scrutiny classes
 #'
 #' Strip any and all scrutiny classes from `x`: those classes that start on
@@ -1397,11 +1366,11 @@ unclass_scr <- function(x) {
 #'
 #' - `check_ggplot2_size()` checks whether the default for the deprecated `size`
 #' aesthetic was changed by the user. Call it if
-#' `utils::packageVersion("ggplot2") >= 3.4` is `TRUE`.
+#' `utils::packageVersion("ggplot2") >= "3.4"` is `TRUE`.
 #'
 #' - `check_ggplot2_linewidth()` checks whether the default for the
 #' not-yet-implemented `linewidth` aesthetic was changed by the user. Call it if
-#' the `utils::packageVersion()` call above returns `FALSE`.
+#' the `utils::packageVersion()` comparison above returns `FALSE`.
 #'
 #' As of now, these two functions are only used within `debit_plot()`.
 #'
@@ -1455,5 +1424,102 @@ check_ggplot2_linewidth <- function(arg_new, default_new) {
     ))
   }
 
+}
+
+
+
+#' Remove the integer part, keeping the decimal part
+#'
+#' `trunc_reverse()` reduces a number to its decimal portion. It is the opposite
+#' of `trunc()`: Whereas `trunc(3.45)` returns `3,` `trunc_reverse(3.45)`
+#' returns `0.45`.
+#'
+#' This is used in some unit tests.
+#'
+#' @param x Decimal number.
+#'
+#' @return Decimal part of `x`.
+#'
+#' @noRd
+trunc_reverse <- function(x) {
+  x - trunc(x)
+}
+
+
+
+#' Conventional summary statistics for `audit()` methods
+#'
+#' @description `audit_summary_stats()` takes a tidyselect spec and uses it to
+#'   compute statistics like mean, SD, and median by column.
+#'
+#'   This is used in many `audit()` methods, such as those following up on
+#'   `duplicate_*()` functions, as well as on `audit_seq()` and
+#'   `audit_total_n()`. (The latter two have their own `audit()` methods to
+#'   summarize their results even further.)
+#'
+#' @param data Data frame.
+#' @param selection Tidyselect specification to select the columns from `data`
+#'   to operate on. It is spliced into `dplyr::across()`.
+#' @param total Boolean. Should a `.total` column summarize across all values in
+#'   `data`, regardless of their original columns? If so, `.total` will be the
+#'   last row of the output tibble.
+#'
+#' @return Tibble with summary statistics.
+#'
+#' @noRd
+audit_summary_stats <- function(data, selection, total = FALSE) {
+
+  selection <- rlang::enexprs(selection)
+
+  if (total && any(".total" == colnames(data))) {
+    cli::cli_abort(c(
+      "`.total` can't be a column name.",
+      "!" = "Please rename the `.total` column, then try again.",
+      "i" = "You could use `dplyr::rename()` for this."
+    ))
+  }
+
+  # The dots are merely pro forma; their purpose is to swallow up the `na.rm =
+  # TRUE` specification in a for loop below.
+  na_count <- function(x, ...) {
+    length(x[is.na(x)])
+  }
+
+  fun_names <- c(  "mean",      "sd",      "median", "min", "max", "na_count")
+  funs      <- list(mean, stats::sd, stats::median,   min,   max,   na_count)
+
+  out <- tibble::tibble()
+
+  # Applying each summarizing function individually, compute the output tibble
+  # row by row:
+  for (i in seq_along(funs)) {
+    temp <- dplyr::summarise(data, dplyr::across(
+      .cols = c(!!!selection),
+      .fns  = function(x) funs[[i]](x, na.rm = TRUE)
+    ))
+    out <- dplyr::bind_rows(out, temp)
+  }
+
+  if (total) {
+    total_summary <- vector("list", length(funs))
+    values_all <- data %>%
+      dplyr::select(c(!!!selection)) %>%
+      tidyr::pivot_longer(dplyr::everything()) %>%
+      dplyr::pull("value")
+    for (i in seq_along(funs)) {
+      total_summary[[i]] <- funs[[i]](values_all, na.rm = TRUE)
+    }
+    total_summary <- c(".total", total_summary)
+    names(total_summary) <- c("term", fun_names)
+  } else {
+    total_summary <- NULL
+  }
+
+  out %>%
+    t() %>%
+    tibble::as_tibble(.name_repair = function(x) fun_names) %>%
+    dplyr::mutate("term" = names(out), .before = 1L) %>%
+    dplyr::bind_rows(total_summary) %>%
+    dplyr::mutate(na_rate = na_count / nrow(data), .after = "na_rate")
 }
 

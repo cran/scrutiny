@@ -1,26 +1,17 @@
 
 #' Summarize scrutiny objects
 #'
-#' @description `audit()` is an S3 generic to follow up on those scrutiny
-#'   functions that perform tests on data frames. It summarizes results of those
-#'   tests and presents the summaries in a tibble. `audit_list()` is a variant
-#'   that returns a named list instead.
+#' @description `audit()` summarizes the results of scrutiny functions like
+#'   `grim_map()` that perform tests on data frames.
 #'
-#'   `audit_seq()` and `audit_total_n()` summarize the results of functions that
-#'   end on `_seq` and `_total_n`, respectively.
-#'
-#'   Below is a list of functions that return objects with classes for which
-#'   there are `audit()` methods. This means you can run `audit()` on the output
-#'   returned by any of these functions. The same is true for `audit_seq()` and
-#'   `audit_total_n()`.
-#'
-#'   Go to the documentation of any function named below to learn about its
-#'   `audit()` method, or about the way its output is processed by `audit_seq()`
-#'   or `audit_total_n()`.
+#'   See below for a record of such functions. Go to the documentation of any of
+#'   them to learn about its `audit()` method.
 
 #' @param data A data frame that inherits one of the classes named below.
 
-#' @section `audit()`:
+#' @details `audit()` is an S3 generic.
+
+#' @section Before `audit()`:
 #'   | \strong{Function}            | \strong{Class}              |
 #'   | ---                          | ---                         |
 #'   | `grim_map()`                 | `"scr_grim_map"`            |
@@ -32,20 +23,6 @@
 #'   | `audit_seq()`                | `"scr_audit_seq"`           |
 #'   | `audit_total_n()`            | `"scr_audit_total_n"`       |
 
-#' @section `audit_seq()`:
-#'   | \strong{Function}            | \strong{Class}              |
-#'   | ---                          | ---                         |
-#'   | `grim_map_seq()`             | `"scr_grim_map_seq"`        |
-#'   | `grimmer_map_seq()`          | `"scr_grimmer_map_seq"`     |
-#'   | `debit_map_seq()`            | `"scr_debit_map_seq"`       |
-
-#' @section `audit_total_n()`:
-#'   | \strong{Function}            | \strong{Class}              |
-#'   | ---                          | ---                         |
-#'   | `grim_map_total_n()`         | `"scr_grim_map_total_n"`    |
-#'   | `grimmer_map_total_n()`      | `"scr_grimmer_map_total_n"` |
-#'   | `debit_map_total_n()`        | `"scr_debit_map_total_n"`   |
-
 #' @return A tibble (data frame) with test summary statistics.
 #' @export
 #'
@@ -55,39 +32,97 @@
 #'   grim_map() %>%
 #'   audit()
 #'
-#' # For GRIM-testing with
-#' # dispersed inputs:
-#' pigs1 %>%
-#'   grim_map_seq() %>%
-#'   audit_seq()
-#'
-#' # For detecting duplicates:
+#' # For duplicate detection:
 #' pigs4 %>%
 #'   duplicate_detect() %>%
 #'   audit()
 
-
-
-# Main function (and list variant) ----------------------------------------
 
 audit <- function(data) {
   UseMethod("audit")
 }
 
 
-#' @rdname audit
+
+#' Summaries in list form
+#' @description `r lifecycle::badge("deprecated")`
+#'
+#'   `audit_list()` is deprecated. Use `audit()` instead.
+#'
+#'   It was meant to be used when `audit()` would have returned tibbles that
+#'   were too wide to be read. However, the output format for `audit()` has now
+#'   been overhauled, there is no longer a need for `audit_list()`.
+#'
+#' @return Named list of `audit()`'s results.
+#'
+#' @keywords internal
+#'
 #' @export
+#'
+#' @examples
+#' # Only use `audit()` instead:
+#' pigs1 %>%
+#'   grim_map() %>%
+#'   audit()
+
 
 audit_list <- function(data) {
+  lifecycle::deprecate_warn(
+    when = "0.3.0",
+    what = "audit_list()",
+    with = "audit()"
+  )
   as.list(audit(data))
 }
 
 
 
-# Variants for the output of other function factories ---------------------
+#' Summarize output of sequence mappers and total-n mappers
+#'
+#' @description `audit_seq()` and `audit_total_n()` summarize the results of
+#'   functions that end on `_seq` and `_total_n`, respectively.
+#'
+#'   See below for a record of such functions. Go to the documentation of any of
+#'   them to learn about the way its output is processed by `audit_seq()` or
+#'   `audit_total_n()`.
 
-#' @rdname audit
+#' @details All functions named below that end on `_seq` were made by
+#'   `function_map_seq()`. All that end on `_total_n` were made by
+#'   `function_map_total_n()`.
+
+#' @param data A data frame that inherits one of the classes named below.
+
+#' @name audit-special
+
+#' @section Before `audit_seq()`:
+#'   | \strong{Function}            | \strong{Class}              |
+#'   | ---                          | ---                         |
+#'   | `grim_map_seq()`             | `"scr_grim_map_seq"`        |
+#'   | `grimmer_map_seq()`          | `"scr_grimmer_map_seq"`     |
+#'   | `debit_map_seq()`            | `"scr_debit_map_seq"`       |
+
+#' @section Before `audit_total_n()`:
+#'   | \strong{Function}            | \strong{Class}              |
+#'   | ---                          | ---                         |
+#'   | `grim_map_total_n()`         | `"scr_grim_map_total_n"`    |
+#'   | `grimmer_map_total_n()`      | `"scr_grimmer_map_total_n"` |
+#'   | `debit_map_total_n()`        | `"scr_debit_map_total_n"`   |
+
+#' @return A tibble (data frame) with test summary statistics.
+#'
 #' @export
+#'
+#' @examples
+#' # For GRIM-testing with dispersed inputs:
+#' out <- pigs1 %>%
+#'   grim_map_seq() %>%
+#'   audit_seq()
+#' out
+#'
+#' # Follow up on `audit_seq()` or
+#' # `audit_total_n()` with `audit()`:
+#' audit(out)
+
 
 audit_seq <- function(data) {
 
@@ -105,11 +140,11 @@ audit_seq <- function(data) {
     purrr::map(dplyr::filter, consistency)
 
   hits_total <- df_list_hits %>%
-    purrr::map_int(nrow) %>%
+    vapply(nrow, 1L) %>%
     unname()
 
   hits_positions <- df_list %>%
-    purrr::map(~ which(.$consistency))
+    purrr::map(function(x) which(x$consistency))
 
   if (is.null(dim(data))) {
     fun <- class(data)[stringr::str_detect(class(data), "_map_seq")]
@@ -118,7 +153,7 @@ audit_seq <- function(data) {
     fun <- eval(rlang::parse_expr(fun))
     msg_error <-
       c("!" = "No values could be tested.")
-    if ("items" %in% names(formals(fun))) {
+    if (any("items" == names(formals(fun)))) {
       fun_name <- deparse(substitute(fun))
       msg_items <- c(
         "x" = "Did you specify the `items` argument in {fun_name} \\
@@ -135,33 +170,34 @@ audit_seq <- function(data) {
   index_hit_distance <- function(df, var_order = var_names) {
     df_by_var <- split(df, df$var)
     out <- purrr::map(df_by_var, index_case_diff)
-    out <- purrr::map(out, ~ .[.$consistency, ])
+    out <- purrr::map(out, function(x) x[x$consistency, ])
     out <- out[order(var_order)]
-    purrr::map(out, ~ .$index_diff)
+    purrr::map(out, function(x) x$index_diff)
   }
 
-  inf_to_na <- function(x) {
-    x[is.infinite(x)] <- NA
-    x
-  }
-
-  map_to_length <- function(x) {
-    purrr::map(x, length)
+  length_unless_na <- function(x) {
+    if (length(x) == 1L && is.na(x)) {
+      0L
+    } else {
+      length(x)
+    }
   }
 
   # Prepare endings of the `diff_*` columns:
-  fn_names <- c("", "_up", "_down")
-  fn_names <- rep(fn_names, length(var_names))
+  fun_names <- c("", "_up", "_down")
+  fun_names <- rep(fun_names, length(var_names))
 
   df_nested <- df_list %>%
     purrr::map(index_hit_distance) %>%
-    tibble::tibble(.name_repair = ~ "distance") %>%
+    tibble::tibble(.name_repair = function(x) "distance") %>%
     tidyr::unnest_wider(col = distance)
 
   cols_hits <- df_nested %>%
     dplyr::mutate(dplyr::across(
       .cols = everything(),
-      .fns = map_to_length,
+      .fns = function(x) {
+        vapply(x, length_unless_na, integer(1L))
+      },
       .names = "hits_{.col}"
     )) %>%
     dplyr::select(-all_of(colnames(df_nested))) %>%
@@ -171,12 +207,15 @@ audit_seq <- function(data) {
     dplyr::mutate(dplyr::across(
       .cols = everything(),
       .fns = list(min_distance_abs, min_distance_pos, min_distance_neg),
-      .names = "diff_{.col}{fn_names}"
+      .names = "diff_{.col}{fun_names}"
     )) %>%
     dplyr::select(-(seq_along(var_names))) %>%
     dplyr::mutate(dplyr::across(
       .cols = everything(),
-      .fns = inf_to_na
+      .fns = function(x) {
+        x[is.infinite(x)] <- NA
+        x
+      }
     )) %>%
     suppressWarnings()
 
@@ -209,18 +248,16 @@ audit_seq <- function(data) {
     .fns = as.numeric
   ))
 
-  out <- data_rev %>%
+  data_rev %>%
     dplyr::mutate(consistency, hits_total) %>%
     dplyr::bind_cols(cols_hits, cols_diff) %>%
     add_class("scr_audit_seq")
-
-  return(out)
 }
 
 
 
 
-#' @rdname audit
+#' @rdname audit-special
 #' @export
 
 audit_total_n <- function(data) {
@@ -239,9 +276,7 @@ audit_total_n <- function(data) {
     purrr::map(dplyr::filter, both_consistent)
 
   map_nrow_half <- function(x) {
-    out <- purrr::map_int(x, nrow)
-    out <- out / 2
-    out
+    vapply(x, nrow, 1L) / 2L
   }
 
   hits_forth <- df_list_hits %>%
@@ -256,13 +291,11 @@ audit_total_n <- function(data) {
   scenarios_total <- map_nrow_half(df_list)
   hit_rate <- hits_total / scenarios_total
 
-  out <- data %>%
+  data %>%
     reverse_map_total_n() %>%
     dplyr::mutate(
       hits_total, hits_forth, hits_back, scenarios_total, hit_rate
     ) %>%
     add_class("scr_audit_total_n")
-
-  return(out)
 }
 

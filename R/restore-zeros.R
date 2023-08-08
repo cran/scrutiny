@@ -98,29 +98,22 @@
 
 
 restore_zeros <- function(x, width = NULL, sep_in = "\\.", sep_out = sep_in,
-                          sep = NULL) {
+                          sep = deprecated()) {
 
   # Make sure no whitespace (from values that already were strings) is factored
   # into the count:
   x <- stringr::str_trim(x)
 
-  # The deprecated `sep` argument was replaced by `sep_in`. Therefore, if `sep`
-  # is still specified...
-  if (!is.null(sep)) {
-    if (sep_in != "\\.") {
-      cli::cli_abort(c(
-        "!" = "`sep` is deprecated. It was replaced by `sep_in`.",
-        "x" = "`sep` conflicts with `sep_in`",
-        "i" = "If `sep` is still specified, `sep_in` takes on its value."
-      ))
-    } else {
-      cli::cli_warn(c(
-        "`sep` is deprecated",
-        ">" = "Use `sep_in`, not `sep`."
-      ))
-    }
-
-    # ... `sep_in` must take on its role:
+  if (lifecycle::is_present(sep)) {
+    lifecycle::deprecate_warn(
+      when = "0.1.1",
+      what = "restore_zeros(sep)",
+      details = c(
+        "`sep` was replaced by `sep_in`, which now conflicts with it.",
+        "If `sep` is still specified, `sep_in` takes on its value."
+      )
+    )
+    # If `sep` is specified, `sep_in` must take on its role:
     sep_in <- sep
   }
 
@@ -193,7 +186,21 @@ restore_zeros <- function(x, width = NULL, sep_in = "\\.", sep_out = sep_in,
 restore_zeros_df <- function(data, cols = everything(),
                              check_numeric_like = TRUE, check_decimals = FALSE,
                              width = NULL, sep_in = "\\.", sep_out = NULL,
-                             sep = NULL, ...) {
+                             sep = deprecated(), ...) {
+
+  if (lifecycle::is_present(sep)) {
+    lifecycle::deprecate_warn(
+      when = "0.3.0",
+      what = "restore_zeros_df(sep)",
+      details = c(
+        "`sep` was replaced by `sep_in`, which now conflicts with it.",
+        "If `sep` is still specified, `sep_in` takes on its value \
+        within `restore_zeros()`."
+      )
+    )
+    # # If `sep` is specified, `sep_in` must take on its role:
+    # sep_in <- sep
+  }
 
   # Check whether the user specified any "old" arguments: those starting on a
   # dot. This check is now the only remaining purpose of the `...` dots because
@@ -231,12 +238,13 @@ restore_zeros_df <- function(data, cols = everything(),
     selection2 <- rlang::expr(dplyr::everything())
   }
 
-  # If desired by the user, create an additional selection criterion: In a
+  # If desired by the user, create an additional selection criterion: In each
   # numeric-like column, at least one value must have at least one decimal
   # place. Otherwise...
   if (check_decimals) {
-    selection3 <- rlang::expr(where(
-      function(x) has_decimals_if_numeric_like(x, sep = sep_in)
+    selection3 <- rlang::expr(where(function(x, sep = "\\.") {
+      !is_numeric_like(x) || !all(decimal_places(x, sep = sep_in) == 0L)
+    }
     ))
   } else {
     # ... the new variable is set up to be evaluated as `everything()`, which is
@@ -244,8 +252,8 @@ restore_zeros_df <- function(data, cols = everything(),
     selection3 <- rlang::expr(dplyr::everything())
   }
 
-  # Column selection is outsourced here so that the resultv can also be used in
-  # a check below:
+  # Column selection is outsourced here so that the result can also be used in a
+  # check below:
   cols_to_select <- rlang::expr({{ cols }} & !!selection2 & !!selection3)
   cols_to_select <- tidyselect::eval_select(cols_to_select, data)
 
@@ -265,7 +273,10 @@ restore_zeros_df <- function(data, cols = everything(),
   }
 
   # Save memory by removing objects that are no longer needed:
-  rm(names_num_cols, selection2, selection3)
+  rm(
+    cols, names_num_cols, names_wrong_cols, names_cols_select,
+    selection2, selection3
+  )
 
   # By default, a columns is selected if and only if it's numeric-like.
   # Additional constrains might come via `selection2` or `selection3` (see
@@ -277,7 +288,7 @@ restore_zeros_df <- function(data, cols = everything(),
     .fns = function(data_dummy) {
       restore_zeros(
         x = data_dummy, width = width,
-        sep_in = sep_in, sep_out = sep_out, sep = sep
+        sep_in = sep_in, sep_out = sep_out
       )
     }
   ))

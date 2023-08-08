@@ -9,12 +9,12 @@ grimmer_map_seq(
   x = NULL,
   sd = NULL,
   n = NULL,
-  var = .var,
-  dispersion = .dispersion,
-  out_min = .out_min,
-  out_max = .out_max,
-  include_reported = .include_reported,
-  include_consistent = .include_consistent,
+  var = Inf,
+  dispersion = 1:5,
+  out_min = "auto",
+  out_max = NULL,
+  include_reported = FALSE,
+  include_consistent = FALSE,
   ...
 )
 }
@@ -46,8 +46,8 @@ Default is \code{FALSE} because the focus should be on clarifying
 inconsistencies.}
 
 \item{...}{Arguments passed down to \code{grimmer_map()}. \emph{(NOTE: Don't use the
-\code{items} argument. It currently contains a bug that will be fixed in
-scrutiny's next CRAN release.)}}
+\code{items} argument. It currently contains a bug that will be fixed in the
+future.)}}
 }
 \value{
 A tibble (data frame) with detailed test results.
@@ -81,6 +81,11 @@ next higher or lower consistent value, respectively.
 \item \code{diff_sd}, \code{diff_sd_up}, and \code{diff_sd_down} do the same for \code{sd}.
 \item Likewise with \code{diff_n}, \code{diff_n_up}, and \code{diff_n_down}.
 }
+
+Call \code{audit()} following \code{audit_seq()} to summarize results even further.
+It's mostly self-explaining, but \code{na_count} and \code{na_rate} are the number
+and rate of times that a difference could not be computed because of a lack
+of corresponding hits within the \code{dispersion} range.
 }
 
 \examples{

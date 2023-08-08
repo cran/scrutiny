@@ -2,7 +2,7 @@
 # Helpers (not exported) --------------------------------------------------
 
 check_length_parens_sep <- function(sep) {
-  if (!length(sep) %in% c(1L, 2L)) {
+  if (!any(length(sep) == c(1L, 2L))) {
     cli::cli_abort(c(
       "!" = "`sep` must have length 1 or 2.",
       "x" = "It has length {length(sep)}: {wrap_in_backticks(sep)}."
@@ -15,11 +15,11 @@ translate_length1_sep_keywords <- function(sep) {
   check_length_parens_sep(sep)
   if (length(sep) == 2L) {
     sep
-  } else if (sep %in% c("parens", "(", "\\(")) {
+  } else if (any(sep == c("parens", "(", "\\("))) {
     c("\\(", "\\)")
-  } else if (sep %in% c("brackets", "[", "\\[")) {
+  } else if (any(sep == c("brackets", "[", "\\["))) {
     c("\\[", "\\]")
-  } else if (sep %in% c("braces", "{", "\\{")) {
+  } else if (any(sep == c("braces", "{", "\\{"))) {
     c("\\{", "\\}")
   } else {
     cli::cli_abort(c(
@@ -129,7 +129,7 @@ proto_split_parens <- function(string, sep = "parens") {
 before_parens <- function(string, sep = "parens") {
   check_length_parens_sep(sep)
   out <- proto_split_parens(string, sep)
-  out <- purrr::map_chr(out, function(x) x[1])
+  out <- vapply(out, function(x) x[1], character(1L))
   stringr::str_trim(out)
 }
 
@@ -144,17 +144,17 @@ inside_parens <- function(string, sep = "parens") {
   if (length(sep) == 2L) {
     sep_close <- sep[2]
   } else {
-    if (sep %in% c("parens", "(", "\\(")) {
+    if (any(sep == c("parens", "(", "\\("))) {
       sep_close <- "\\)"
-    } else if (sep %in% c("brackets", "[", "\\[")) {
+    } else if (any(sep == c("brackets", "[", "\\["))) {
       sep_close <- "\\]"
-    } else if (sep %in% c("braces", "{", "\\{")) {
+    } else if (any(sep == c("braces", "{", "\\{"))) {
       sep_close <- "\\}"
     }
   }
 
   out <- proto_split_parens(string, sep)
-  out <- purrr::map(out, function(x) x[2])
+  out <- vapply(out, function(x) x[2], "", USE.NAMES = FALSE)
   sub(paste0(sep_close, ".*"), "", out)
 }
 

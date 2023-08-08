@@ -10,11 +10,11 @@ grimmer_map_total_n(
   x2 = NULL,
   sd1 = NULL,
   sd2 = NULL,
-  dispersion = .dispersion,
-  n_min = .n_min,
-  n_max = .n_max,
-  constant = .constant,
-  constant_index = .constant_index,
+  dispersion = 0:5,
+  n_min = 1L,
+  n_max = NULL,
+  constant = NULL,
+  constant_index = NULL,
   ...
 )
 }
@@ -48,8 +48,8 @@ of dispersed values. Default is \code{NULL}, i.e., no constant values.}
 will go to the right of \code{n_change}.}
 
 \item{...}{Arguments passed down to \code{grimmer_map()}. \emph{(NOTE: Don't use the
-\code{items} argument. It currently contains a bug that will be fixed in
-scrutiny's next CRAN release.)}}
+\code{items} argument. It currently contains a bug that will be fixed in the
+future.)}}
 }
 \value{
 A tibble with these columns:

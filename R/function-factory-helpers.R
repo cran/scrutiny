@@ -31,7 +31,7 @@ check_factory_key_args_values <- function(data, key_cols_call) {
     offenders_names <- glue::as_glue(names(offenders))
     offenders_names <- wrap_in_backticks(offenders_names)
     offenders <- wrap_in_backticks(offenders)
-    name_current_fn <- name_caller_call(n = 2L)
+    name_current_fn <- name_caller_call(n = 3L)
     if (length(offenders) == 1L) {
       msg_is_colname <- "is not a column name"
     } else {
@@ -86,7 +86,7 @@ check_factory_key_args_names <- function(key_cols_missing,
 
     # Get the name of the current (i.e., factory-made) function using a helper
     # from the utils.R file that wraps `rlang::caller_call()`:
-    msg_fn_name <- name_caller_call(n = 2L)
+    msg_fun_name <- name_caller_call(n = 3L)
 
     # Because either one or more arguments (or column names) may be missing, the
     # wording of the error message may be either singular or plural:
@@ -113,7 +113,7 @@ check_factory_key_args_names <- function(key_cols_missing,
           missing from `data`.",
       "x" = "{msg_needs_to_be} of the input data frame.",
       "i" = "Alternatively, specify the {offenders} \\
-          {msg_argument} of {msg_fn_name} as {msg_names}."
+          {msg_argument} of {msg_fun_name} as {msg_names}."
     ))
   }
 
@@ -164,7 +164,7 @@ check_factory_dots <- function(fun, fun_name_scalar, ...) {
 
 #' Get an `arg_list` object
 #'
-#' That is, a named list of arguments passed by the user who called function
+#' That is, a named list of arguments passed by the user who called the function
 #' within which `call_arg_list()` was called.
 #'
 #' @return Named list.
@@ -496,7 +496,7 @@ class_with <- function(data, contains, all_classes = FALSE,
     return(cd[stringr::str_detect(cd, contains)])
   }
 
-  cd_lengths <- purrr::map_int(cd, stringr::str_length)
+  cd_lengths <- vapply(cd, stringr::str_length, integer(1L))
   cd <- cd[order(cd_lengths, decreasing = order_decreasing)]
 
   # Outer loop:
