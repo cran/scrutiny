@@ -341,11 +341,11 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(scrutiny)</span></code></pre></div>
-<p>You can use scrutiny to analyze duplicate values in data.
-Duplications can go a long way in assessing the reliability of published
+<p>You can use scrutiny to detect duplicate values in any dataset.
+Duplicates can go a long way in assessing the reliability of published
 research.</p>
-<p>This vignette walks you through scrutiny’s tools for finding,
-counting, and summarizing duplications. It uses the <code>pigs4</code>
+<p>This vignette walks you through scrutiny’s tools for detecting,
+counting, and summarizing duplicates. It uses the <code>pigs4</code>
 dataset as a simple example:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>pigs4</span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co">#&gt; # A tibble: 5 × 3</span></span>
@@ -356,41 +356,49 @@ dataset as a simple example:</p>
 <span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt; 3 4.22  5.17  4.40 </span></span>
 <span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt; 4 4.22  7.57  5.92 </span></span>
 <span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt; 5 5.17  8.13  5.17</span></span></code></pre></div>
-<div id="ranked-counting-with-duplicate_count" class="section level2">
-<h2>Ranked counting with <code>duplicate_count()</code></h2>
+<div id="frequency-tabulation-with-duplicate_count" class="section level2">
+<h2>Frequency tabulation with <code>duplicate_count()</code></h2>
 <p>A good first step is to create a frequency table. To do so, use
 <code>duplicate_count()</code>:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>pigs4 <span class="sc">%&gt;%</span> </span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">duplicate_count</span>()</span>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt; # A tibble: 11 × 4</span></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt;    value count locations          locations_n</span></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt; &lt;int&gt; &lt;chr&gt;                    &lt;int&gt;</span></span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt;  1 5.17      3 snout, tail, wings           3</span></span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt;  2 4.22      2 snout                        1</span></span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt;  3 8.13      2 snout, tail                  2</span></span>
-<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt;  4 4.73      1 snout                        1</span></span>
-<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt;  5 6.88      1 tail                         1</span></span>
-<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt;  6 7.33      1 tail                         1</span></span>
-<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt;  7 7.57      1 tail                         1</span></span>
-<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt;  8 4.40      1 wings                        1</span></span>
-<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt;  9 5.92      1 wings                        1</span></span>
-<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; 10 6.09      1 wings                        1</span></span>
-<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co">#&gt; 11 8.27      1 wings                        1</span></span></code></pre></div>
-<p>It returns a tibble (data frame) that lists all unique
-<code>value</code>s. It is ordered by the <code>count</code> of values
-in the input data frame, so the values that appear most often are at the
-top. The <code>locations</code> are the names of the column or columns
-in which a given value appears. They are counted by
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt;    value frequency locations          locations_n</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt;     &lt;int&gt; &lt;chr&gt;                    &lt;int&gt;</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt;  1 5.17          3 snout, tail, wings           3</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt;  2 4.22          2 snout                        1</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt;  3 8.13          2 snout, tail                  2</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt;  4 4.73          1 snout                        1</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt;  5 6.88          1 tail                         1</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt;  6 7.33          1 tail                         1</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt;  7 7.57          1 tail                         1</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt;  8 4.40          1 wings                        1</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt;  9 5.92          1 wings                        1</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; 10 6.09          1 wings                        1</span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co">#&gt; 11 8.27          1 wings                        1</span></span></code></pre></div>
+<p>It returns a tibble (data frame) that lists each unique
+<code>value</code>. The tibble is ordered by the <code>frequency</code>
+of values in the input data frame, so the values that appear most often
+are at the top. The <code>locations</code> are the names of all the
+columns in which a given value appears. They are counted by
 <code>locations_n</code>.</p>
-<p>For larger datasets, summary statistics can be helpful. Just run
-<code>audit()</code> after <code>duplicate_count()</code>:</p>
+<p>For example, <code>5.17</code> is the most frequent value in
+<code>pigs4</code>. It appears 3 times (<code>frequency</code>), namely
+in the <code>snout</code>, <code>tail</code>, and <code>wings</code>
+columns; so <code>locations_n</code> is also <code>3</code>. The next
+most frequent value is <code>4.22</code> which appears twice, but both
+of these instances are in the <code>snout</code> column, so
+<code>locations_n</code> is <code>1</code>.</p>
+<p>Run <code>audit()</code> after <code>duplicate_count()</code> to get
+summary statistics for the two numeric columns, <code>frequency</code>
+and <code>locations_n</code>:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>pigs4 <span class="sc">%&gt;%</span> </span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>    <span class="fu">duplicate_count</span>() <span class="sc">%&gt;%</span> </span>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>    <span class="fu">audit</span>()</span>
 <span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 8</span></span>
 <span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt;   term         mean    sd median   min   max na_count na_rate</span></span>
 <span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;</span></span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt; 1 count        1.36 0.674      1     1     3        0       0</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt; 1 frequency    1.36 0.674      1     1     3        0       0</span></span>
 <span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt; 2 locations_n  1.27 0.647      1     1     3        0       0</span></span></code></pre></div>
 </div>
 <div id="counting-by-column-pair-with-duplicate_count_colpair" class="section level2">
@@ -408,15 +416,19 @@ in which a given value appears. They are counted by
 <span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co">#&gt; 3 tail  wings     1       5       5    0.2    0.2</span></span></code></pre></div>
 <p><code>x</code> and <code>y</code> represent all combinations of
 columns in <code>pigs4</code>. The <code>count</code> is the number of
-values that appear in both respective columns. This is different from
-<code>duplicate_count()</code>, where <code>count</code> displays total
-frequencies.</p>
-<p><code>snout</code> and <code>tail</code> are the column pair with the
-most overlap: 2 out of 5 values are the same, a rate of 0.4. If there
-are no missing values, <code>total_x</code> and <code>total_y</code> are
-the same. The same applies to <code>rate_x</code> and
+values that appear in both respective columns. <code>total_x</code> and
+<code>total_y</code> are the numbers of non-missing values in the
+original columns listed under <code>x</code> and <code>y</code>.
+Similarly, <code>rate_x</code> is the rate of <code>x</code> values that
+also appear in <code>y</code>, and <code>rate_y</code> is the rate of
+<code>y</code> values that also appear in <code>x</code>. If there are
+no missing values, <code>total_x</code> is the same as
+<code>total_y</code>, and <code>rate_x</code> is the same as
 <code>rate_y</code>.</p>
-<p>Again, you can get summary statistics with <code>audit()</code>:</p>
+<p>Here, <code>snout</code> and <code>tail</code> are the column pair
+with the most overlap: 2 out of 5 values are the same, a duplication
+rate of 0.4.</p>
+<p>Again, you can call <code>audit()</code> for summary statistics:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>pigs4 <span class="sc">%&gt;%</span> </span>
 <span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="fu">duplicate_count_colpair</span>() <span class="sc">%&gt;%</span> </span>
 <span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="fu">audit</span>()</span>
@@ -432,10 +444,10 @@ the same. The same applies to <code>rate_x</code> and
 <div id="counting-by-observation-with-duplicate_tally" class="section level2">
 <h2>Counting by observation with <code>duplicate_tally()</code></h2>
 <p>Unlike the other two functions, <code>duplicate_tally()</code>
-preserves the structure of the original data frame. It adds an
-<code>_n</code> column next to each original column. The newly added
-columns count how often each value appears in the data frame as a
-whole:</p>
+largely preserves the structure of the original data frame. It only adds
+a column ending on <code>_n</code> next to each original column. The new
+columns count how often the values to their left appear in the data
+frame as a whole:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>pigs4 <span class="sc">%&gt;%</span> </span>
 <span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>    <span class="fu">duplicate_tally</span>()</span>
 <span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">#&gt; # A tibble: 5 × 6</span></span>
@@ -451,20 +463,20 @@ so its entries in <code>snout_n</code> are <code>2</code>. But likewise,
 <code>8.13</code> appears in both <code>snout</code> and
 <code>tail</code>, so both observations are marked <code>2</code> in the
 <code>_n</code> columns.</p>
-<p>When following <code>duplicate_tally()</code> up with
+<p>When following up <code>duplicate_tally()</code> with
 <code>audit()</code>, it shows summary statistics for each
 <code>_n</code> column. The last row summarizes all of these columns
-together.</p>
+together:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>pigs4 <span class="sc">%&gt;%</span> </span>
 <span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>    <span class="fu">duplicate_tally</span>() <span class="sc">%&gt;%</span> </span>
 <span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>    <span class="fu">audit</span>()</span>
 <span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co">#&gt; # A tibble: 4 × 8</span></span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co">#&gt;   term    mean    sd median   min   max na_count na_rate</span></span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;</span></span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">#&gt; 1 snout   2    0.707      2     1     3        0       0</span></span>
-<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co">#&gt; 2 tail    1.6  0.894      1     1     3        0       0</span></span>
-<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt; 3 wings   1.4  0.894      1     1     3        0       0</span></span>
-<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co">#&gt; 4 .total  1.67 0.816      1     1     3        0       0</span></span></code></pre></div>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co">#&gt;   term     mean    sd median   min   max na_count na_rate</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">#&gt; 1 snout_n  2    0.707      2     1     3        0       0</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co">#&gt; 2 tail_n   1.6  0.894      1     1     3        0       0</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt; 3 wings_n  1.4  0.894      1     1     3        0       0</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co">#&gt; 4 .total   1.67 0.816      1     1     3        0       0</span></span></code></pre></div>
 </div>
 
 

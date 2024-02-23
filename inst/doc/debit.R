@@ -1,12 +1,8 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-
-## ----include=FALSE------------------------------------------------------------
-# Dev only: load scrutiny from within scrutiny
-devtools::load_all(".")
 
 ## ----setup, message=FALSE-----------------------------------------------------
 library(scrutiny)
@@ -15,7 +11,7 @@ library(scrutiny)
 debit(x = "0.35", sd = "0.18", n = 20)
 
 ## -----------------------------------------------------------------------------
-flying_pigs <- tibble(
+flying_pigs <- tibble::tibble(
     x  = runif(5, 0.2, 1) %>% round(2) %>% restore_zeros(),
     sd = runif(5, 0, 0.3) %>% round(2) %>% restore_zeros(),
     n = 1000
@@ -28,24 +24,17 @@ flying_pigs
 flying_pigs %>% 
   debit_map()
 
-## ---- error=TRUE--------------------------------------------------------------
+## ----error=TRUE---------------------------------------------------------------
 pigs3  # data saved within the package
 
 pigs3 %>% 
   debit_map()
 
-## ---- error=TRUE--------------------------------------------------------------
+## ----error=TRUE---------------------------------------------------------------
 pigs5  # no binary means / SDs!
 
 pigs5 %>% 
   debit_map()
-
-## -----------------------------------------------------------------------------
-pigs3 %>% 
-  debit_map(rounding = "up")
-
-pigs3 %>% 
-  debit_map(rounding = "even")
 
 ## -----------------------------------------------------------------------------
 pigs3 %>% 

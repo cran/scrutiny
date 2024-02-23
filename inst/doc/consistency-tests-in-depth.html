@@ -12,7 +12,7 @@
 
 
 
-<title>Implementing consistency tests</title>
+<title>Consistency tests in depth</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -358,7 +358,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<h1 class="title toc-ignore">Implementing consistency tests</h1>
+<h1 class="title toc-ignore">Consistency tests in depth</h1>
 
 
 
@@ -366,19 +366,20 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
 <p>When implementing consistency tests in R, you shouldn’t have to start
-from zero. This vignette introduces scrutiny’s support system for
-writing new consistency testing functions.</p>
-<p>Following the vignette will dramatically simplify the implementation
-of basic and advanced testing routines via function factories. It will
-enable you to write entire families of functions in a streamlined way:
-If you are familiar with any one scrutiny-style consistency test, you
-will immediately be able to make some sense of the other ones. This is
-true across all levels of consistency testing.</p>
-<p>Below is an outline of these levels, and of the present vignette,
-with GRIM as a paradigmatic example. If a valid consistency test is
-newly implemented with at least the first step, I’ll be happy to accept
-a pull request to scrutiny. This means you’ll only have to implement the
-core test itself, without even reading the vignette any further.</p>
+from zero. This vignette goes into detail on scrutiny’s support system
+for writing new consistency testing functions. For a brief presentation,
+see <code>vignette(&quot;consistency-tests-simple&quot;)</code>.</p>
+<p>Following the present vignette will dramatically simplify the
+implementation of basic and advanced testing routines via function
+factories. It will enable you to write entire families of functions in a
+streamlined way: If you are familiar with any one scrutiny-style
+consistency test, you will immediately be able to make some sense of the
+other ones. This is true across all levels of consistency testing.</p>
+<p>Below is an outline of these levels, and of the vignette, with GRIM
+as a paradigmatic example. If a valid consistency test is newly
+implemented with at least the first step, I’ll be happy to accept a pull
+request to scrutiny. This means you’ll only have to implement the core
+test itself, without even reading the vignette any further.</p>
 <ol style="list-style-type: decimal">
 <li><p>A bare-bones, non-exported (!) function for testing a single set
 of cases, such as <code>grim_scalar()</code>.</p></li>
@@ -409,10 +410,7 @@ existing functions that implement actual tests, and that the reader may
 be familiar with.</p>
 <p>Please make sure to follow the <a href="https://style.tidyverse.org/">tidyverse style guide</a> as well as
 the scrutiny-specific conventions laid out below, wherever applicable.
-If you’d like to write a new package, work with Hadley Wickham’s book
-<em>R Packages</em> <span class="citation">(Wickham 2015)</span> in its
-most recent version, which is <a href="https://r-pkgs.org/">free
-online</a>.</p>
+If you’d like to write a new package, work with the free online book <a href="https://r-pkgs.org/"><em>R Packages</em></a> <span class="citation">(Wickham and Bryan 2023)</span>.</p>
 </div>
 <div id="single-case" class="section level1">
 <h1>1. Single-case</h1>
@@ -423,7 +421,7 @@ other steps build up on it, and all of them are exported.</p>
 to be tested for consistency with each other. Typically, they will be
 coercible to numeric. This means they either are numeric themselves or
 they are strings that can be converted to numbers (see
-<code>is_numeric_like()</code>). The function returns a Boolean value of
+<code>is_numeric_like()</code>). The function returns a logical value of
 length 1: It’s <code>TRUE</code> if the inputs are mutually consistent,
 and <code>FALSE</code> if they aren’t.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a> schlim_scalar <span class="ot">&lt;-</span> <span class="cf">function</span>(y, n) {</span>
@@ -441,10 +439,10 @@ reconstructs rounded numbers. An argument that determines how the
 function will round numbers should be called <code>rounding</code>. The
 function should then internally call <code>reround()</code>. The same
 goes for “unrounding” (i.e., reconstructing rounding bounds) and
-<code>unround()</code>. See also <code>vignette(&quot;rounding&quot;)</code>. A
-single-case function that performs rounding will also need a helper to
-count decimal places, which should be
-<code>decimal_places_scalar()</code>.</p>
+<code>unround()</code>. See also
+<code>vignette(&quot;rounding-in-depth&quot;)</code>. A single-case function that
+performs rounding will also need a helper to count decimal places, which
+should be <code>decimal_places_scalar()</code>.</p>
 <p>The function’s name is that of the test in lowercase, followed by
 <code>_scalar</code> which refers to the one-case limit. If your
 function happens to be applicable to multiple value sets already due to
@@ -531,11 +529,10 @@ test.</p></li>
 <p>As you can see, <code>function_map()</code> is not a helper used
 inside other functions when creating them with <code>function()</code> —
 instead, it takes the place of <code>function()</code> itself. This
-makes it a so-called function factory, or more precisely, a function
-operator, a.k.a. decorator <span class="citation">(Wickham 2019,
-ch. 10-11)</span>. You already met <code>base::Vectorize()</code> in
-section 2, which is also a function operator, but a more general and
-straightforward one.</p>
+makes it a so-called function factory, or more precisely, a <a href="https://adv-r.hadley.nz/function-operators.html">function
+operator</a> <span class="citation">(Wickham 2019)</span>. You already
+met <code>base::Vectorize()</code> in section 2, which is also a
+function operator, but a more general and straightforward one.</p>
 <p>To export a function manufactured this way from your own package,
 make sure to follow <a href="https://purrr.tidyverse.org/reference/faq-adverbs-export.html">this
 purrr FAQ</a>. (Incredible as it sounds, scrutiny will then take on the
@@ -593,7 +590,7 @@ the actual columns:</p>
 <p>If any columns are neither present in the data frame nor identified
 via arguments, there will be a precise error:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">schlim_map</span>(df2, <span class="at">y =</span> foo)</span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">#&gt; Error in `check_factory_key_args_names()` at scrutiny/R/function-factory-helpers.R:274:2:</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">#&gt; Error in `check_factory_key_args_names()` at scrutiny/R/function-factory-helpers.R:274:3:</span></span>
 <span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">#&gt; ! Column `n` is missing from `data`.</span></span>
 <span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">#&gt; ✖ It should be a column of the input data frame.</span></span>
 <span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt; ℹ Alternatively, specify the `n` argument of `schlim_map()` as the name of the</span></span>
@@ -601,7 +598,7 @@ via arguments, there will be a precise error:</p>
 <span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a></span>
 <span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co"># With a wrong identification:</span></span>
 <span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="fu">schlim_map</span>(df2, <span class="at">n =</span> mike)</span>
-<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt; Error in `check_factory_key_args_values()` at scrutiny/R/function-factory-helpers.R:273:2:</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt; Error in `check_factory_key_args_values()` at scrutiny/R/function-factory-helpers.R:273:3:</span></span>
 <span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt; ! `mike` is not a column name of `data`.</span></span>
 <span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt; ✖ The `n` argument of `schlim_map()` was specified as `mike`, but there is no</span></span>
 <span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co">#&gt;   column in `data` called `mike`.</span></span></code></pre></div>
@@ -710,19 +707,19 @@ two <code>is_map_*()</code> functions.</p></li>
 transform one or more key columns. In this case, representing them in
 the output would be confusing because their effects have already played
 out via the transformed key column(s). For every helper column that
-performs such transformations, the mapper should have a Boolean
+performs such transformations, the mapper should have a logical
 argument, <code>TRUE</code> by default, that determines whether or not
 the helper column transforms those key column(s). If <code>TRUE</code>,
 the helper column does but is not included in the output itself. If
 <code>FALSE</code>, the helper column is included but no transformation
-takes place. The name of this Boolean argument should start on
+takes place. The name of this logical argument should start on
 <code>merge_</code>, followed by the name of the helper column in
 question. An example for all of that is the optional <code>items</code>
 column in <code>grim_map()</code>’s input data frame, together with this
 function’s <code>items</code> and <code>merge_items</code> arguments. To
 work with helper columns, call <code>manage_helper_col()</code> within
 the mapper.</p></li>
-<li><p>The output data frame also includes a Boolean column named
+<li><p>The output data frame also includes a logical column named
 <code>&quot;consistency&quot;</code>. It contains the results of the consistency
 test, as determined by the respective <code>*_scalar()</code> function.
 In each row, <code>&quot;consistency&quot;</code> is <code>TRUE</code> if the
@@ -797,19 +794,24 @@ this:</p>
 <div id="practical-steps" class="section level3">
 <h3>Practical steps</h3>
 <p>How to actually write mapper functions? Again, I recommend
-<code>function_map()</code>. The functions created below are
-conceptually very similar.</p>
+<code>function_map()</code>. The two functions created below are very
+similar but don’t have as many options. Of course, you can manually add
+code for any options you like so long as the requirements above are
+still met.</p>
 <p>Apply the <code>*_scalar()</code> function to the input data frame
 using <code>purrr::pmap_lgl()</code>:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>schlim_map_alt1 <span class="ot">&lt;-</span> <span class="cf">function</span>(data, ...) {</span>
 <span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  scrutiny<span class="sc">::</span><span class="fu">check_mapper_input_colnames</span>(data, <span class="fu">c</span>(<span class="st">&quot;y&quot;</span>, <span class="st">&quot;n&quot;</span>), <span class="st">&quot;SCHLIM&quot;</span>)</span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  consistency <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">pmap_lgl</span>(data, schlim_scalar, ...)</span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  out <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">y =</span> data<span class="sc">$</span>y, <span class="at">n =</span> data<span class="sc">$</span>n, consistency)</span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  out <span class="ot">&lt;-</span> <span class="fu">add_class</span>(out, <span class="st">&quot;scr_schlim_map&quot;</span>)  <span class="co"># See section &quot;S3 classes&quot; below</span></span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>  out</span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>}</span></code></pre></div>
-<p>Alternatively, call <code>dplyr::rowwise()</code> and directly mutate
-<code>&quot;consistency&quot;</code>:</p>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>    <span class="at">y =</span> data<span class="sc">$</span>y,</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>    <span class="at">n =</span> data<span class="sc">$</span>n,</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>    <span class="at">consistency =</span> purrr<span class="sc">::</span><span class="fu">pmap_lgl</span>(data, schlim_scalar, ...)</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>    <span class="fu">add_class</span>(<span class="st">&quot;scr_schlim_map&quot;</span>)  <span class="co"># See section &quot;S3 classes&quot; below</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>}</span></code></pre></div>
+<p>Alternatively, you might call <code>dplyr::rowwise()</code> and
+directly mutate <code>&quot;consistency&quot;</code>. I don’t recommend this
+approach because <code>dplyr::rowwise()</code> is quite slow.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>schlim_map_alt2 <span class="ot">&lt;-</span> <span class="cf">function</span>(data, ...) {</span>
 <span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  scrutiny<span class="sc">::</span><span class="fu">check_mapper_input_colnames</span>(data, <span class="fu">c</span>(<span class="st">&quot;y&quot;</span>, <span class="st">&quot;n&quot;</span>), <span class="st">&quot;SCHLIM&quot;</span>)</span>
 <span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  data <span class="sc">%&gt;%</span> </span>
@@ -1080,7 +1082,7 @@ override these defaults via two arguments named <code>color_cons</code>
 for consistent value sets and <code>color_incons</code> for inconsistent
 ones.</li>
 <li>If certain layers are optional rather than essential to the plot,
-their display can be controlled via Boolean arguments that start on
+their display can be controlled via logical arguments that start on
 <code>show_</code>. Examples are <code>show_data</code> in
 <code>grim_plot()</code> or <code>show_outer_boxes</code> in
 <code>debit_plot()</code>. Only arguments of this kind should start on
@@ -1160,33 +1162,33 @@ requirements for mapper functions laid out in section 3.</p>
 <span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a><span class="co"># Test dispersed sequences:</span></span>
 <span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a>out_seq <span class="ot">&lt;-</span> <span class="fu">schlim_map_seq</span>(df1)</span>
 <span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a>out_seq</span>
-<span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a><span class="co">#&gt; # A tibble: 120 × 5</span></span>
-<span id="cb17-11"><a href="#cb17-11" tabindex="-1"></a><span class="co">#&gt;        y     n consistency  case var  </span></span>
-<span id="cb17-12"><a href="#cb17-12" tabindex="-1"></a><span class="co">#&gt;    &lt;int&gt; &lt;int&gt; &lt;lgl&gt;       &lt;int&gt; &lt;chr&gt;</span></span>
-<span id="cb17-13"><a href="#cb17-13" tabindex="-1"></a><span class="co">#&gt;  1    15     7 FALSE           1 y    </span></span>
-<span id="cb17-14"><a href="#cb17-14" tabindex="-1"></a><span class="co">#&gt;  2    16     7 FALSE           1 y    </span></span>
-<span id="cb17-15"><a href="#cb17-15" tabindex="-1"></a><span class="co">#&gt;  3    17     7 FALSE           1 y    </span></span>
-<span id="cb17-16"><a href="#cb17-16" tabindex="-1"></a><span class="co">#&gt;  4    18     7 FALSE           1 y    </span></span>
-<span id="cb17-17"><a href="#cb17-17" tabindex="-1"></a><span class="co">#&gt;  5    19     7 FALSE           1 y    </span></span>
-<span id="cb17-18"><a href="#cb17-18" tabindex="-1"></a><span class="co">#&gt;  6    21     7 FALSE           1 y    </span></span>
-<span id="cb17-19"><a href="#cb17-19" tabindex="-1"></a><span class="co">#&gt;  7    22     7 TRUE            1 y    </span></span>
-<span id="cb17-20"><a href="#cb17-20" tabindex="-1"></a><span class="co">#&gt;  8    23     7 TRUE            1 y    </span></span>
-<span id="cb17-21"><a href="#cb17-21" tabindex="-1"></a><span class="co">#&gt;  9    24     7 TRUE            1 y    </span></span>
-<span id="cb17-22"><a href="#cb17-22" tabindex="-1"></a><span class="co">#&gt; 10    25     7 TRUE            1 y    </span></span>
+<span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a><span class="co">#&gt; # A tibble: 120 × 6</span></span>
+<span id="cb17-11"><a href="#cb17-11" tabindex="-1"></a><span class="co">#&gt;        y     n consistency diff_var  case var  </span></span>
+<span id="cb17-12"><a href="#cb17-12" tabindex="-1"></a><span class="co">#&gt;    &lt;int&gt; &lt;int&gt; &lt;lgl&gt;          &lt;int&gt; &lt;int&gt; &lt;chr&gt;</span></span>
+<span id="cb17-13"><a href="#cb17-13" tabindex="-1"></a><span class="co">#&gt;  1    15     7 FALSE             -5     1 y    </span></span>
+<span id="cb17-14"><a href="#cb17-14" tabindex="-1"></a><span class="co">#&gt;  2    16     7 FALSE             -4     1 y    </span></span>
+<span id="cb17-15"><a href="#cb17-15" tabindex="-1"></a><span class="co">#&gt;  3    17     7 FALSE             -3     1 y    </span></span>
+<span id="cb17-16"><a href="#cb17-16" tabindex="-1"></a><span class="co">#&gt;  4    18     7 FALSE             -2     1 y    </span></span>
+<span id="cb17-17"><a href="#cb17-17" tabindex="-1"></a><span class="co">#&gt;  5    19     7 FALSE             -1     1 y    </span></span>
+<span id="cb17-18"><a href="#cb17-18" tabindex="-1"></a><span class="co">#&gt;  6    21     7 FALSE              1     1 y    </span></span>
+<span id="cb17-19"><a href="#cb17-19" tabindex="-1"></a><span class="co">#&gt;  7    22     7 TRUE               2     1 y    </span></span>
+<span id="cb17-20"><a href="#cb17-20" tabindex="-1"></a><span class="co">#&gt;  8    23     7 TRUE               3     1 y    </span></span>
+<span id="cb17-21"><a href="#cb17-21" tabindex="-1"></a><span class="co">#&gt;  9    24     7 TRUE               4     1 y    </span></span>
+<span id="cb17-22"><a href="#cb17-22" tabindex="-1"></a><span class="co">#&gt; 10    25     7 TRUE               5     1 y    </span></span>
 <span id="cb17-23"><a href="#cb17-23" tabindex="-1"></a><span class="co">#&gt; # ℹ 110 more rows</span></span>
 <span id="cb17-24"><a href="#cb17-24" tabindex="-1"></a></span>
 <span id="cb17-25"><a href="#cb17-25" tabindex="-1"></a><span class="co"># Summarize:</span></span>
 <span id="cb17-26"><a href="#cb17-26" tabindex="-1"></a><span class="fu">audit_seq</span>(out_seq)</span>
 <span id="cb17-27"><a href="#cb17-27" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 12</span></span>
 <span id="cb17-28"><a href="#cb17-28" tabindex="-1"></a><span class="co">#&gt;       y     n consistency hits_total hits_y hits_n diff_y diff_y_up diff_y_down</span></span>
-<span id="cb17-29"><a href="#cb17-29" tabindex="-1"></a><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;lgl&gt;            &lt;int&gt;  &lt;int&gt;  &lt;int&gt;  &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;</span></span>
+<span id="cb17-29"><a href="#cb17-29" tabindex="-1"></a><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;lgl&gt;            &lt;int&gt;  &lt;int&gt;  &lt;int&gt;  &lt;int&gt;     &lt;int&gt;       &lt;int&gt;</span></span>
 <span id="cb17-30"><a href="#cb17-30" tabindex="-1"></a><span class="co">#&gt; 1    20     7 FALSE                9      4      5      2         2          NA</span></span>
 <span id="cb17-31"><a href="#cb17-31" tabindex="-1"></a><span class="co">#&gt; 2    21     8 FALSE                6      2      4      4         4          NA</span></span>
 <span id="cb17-32"><a href="#cb17-32" tabindex="-1"></a><span class="co">#&gt; 3    22     9 FALSE                4      0      4     NA        NA          NA</span></span>
 <span id="cb17-33"><a href="#cb17-33" tabindex="-1"></a><span class="co">#&gt; 4    23    10 FALSE                3      0      3     NA        NA          NA</span></span>
 <span id="cb17-34"><a href="#cb17-34" tabindex="-1"></a><span class="co">#&gt; 5    24    11 FALSE                2      0      2     NA        NA          NA</span></span>
 <span id="cb17-35"><a href="#cb17-35" tabindex="-1"></a><span class="co">#&gt; 6    25    12 FALSE                2      0      2     NA        NA          NA</span></span>
-<span id="cb17-36"><a href="#cb17-36" tabindex="-1"></a><span class="co">#&gt; # ℹ 3 more variables: diff_n &lt;dbl&gt;, diff_n_up &lt;dbl&gt;, diff_n_down &lt;dbl&gt;</span></span></code></pre></div>
+<span id="cb17-36"><a href="#cb17-36" tabindex="-1"></a><span class="co">#&gt; # ℹ 3 more variables: diff_n &lt;int&gt;, diff_n_up &lt;int&gt;, diff_n_down &lt;int&gt;</span></span></code></pre></div>
 <p>By default, a <code>*_map_seq()</code> function only creates
 sequences around inconsistent input values. That’s because its primary
 purpose is to shed light on inconsistencies in reported statistics.
@@ -1196,7 +1198,7 @@ Override the default with <code>include_consistent = TRUE</code>:</p>
 <span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>  <span class="fu">audit_seq</span>()</span>
 <span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a><span class="co">#&gt; # A tibble: 10 × 12</span></span>
 <span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a><span class="co">#&gt;        y     n consistency hits_total hits_y hits_n diff_y diff_y_up diff_y_down</span></span>
-<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a><span class="co">#&gt;    &lt;int&gt; &lt;int&gt; &lt;lgl&gt;            &lt;int&gt;  &lt;int&gt;  &lt;int&gt;  &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;</span></span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a><span class="co">#&gt;    &lt;int&gt; &lt;int&gt; &lt;lgl&gt;            &lt;int&gt;  &lt;int&gt;  &lt;int&gt;  &lt;int&gt;     &lt;int&gt;       &lt;int&gt;</span></span>
 <span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a><span class="co">#&gt;  1    16     3 TRUE                14     10      4      1         1          -1</span></span>
 <span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a><span class="co">#&gt;  2    17     4 TRUE                13      9      4      1         1          -1</span></span>
 <span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a><span class="co">#&gt;  3    18     5 TRUE                11      7      4      1         1          -1</span></span>
@@ -1207,7 +1209,7 @@ Override the default with <code>include_consistent = TRUE</code>:</p>
 <span id="cb18-14"><a href="#cb18-14" tabindex="-1"></a><span class="co">#&gt;  8    23    10 FALSE                3      0      3     NA        NA          NA</span></span>
 <span id="cb18-15"><a href="#cb18-15" tabindex="-1"></a><span class="co">#&gt;  9    24    11 FALSE                2      0      2     NA        NA          NA</span></span>
 <span id="cb18-16"><a href="#cb18-16" tabindex="-1"></a><span class="co">#&gt; 10    25    12 FALSE                2      0      2     NA        NA          NA</span></span>
-<span id="cb18-17"><a href="#cb18-17" tabindex="-1"></a><span class="co">#&gt; # ℹ 3 more variables: diff_n &lt;dbl&gt;, diff_n_up &lt;dbl&gt;, diff_n_down &lt;dbl&gt;</span></span>
+<span id="cb18-17"><a href="#cb18-17" tabindex="-1"></a><span class="co">#&gt; # ℹ 3 more variables: diff_n &lt;int&gt;, diff_n_up &lt;int&gt;, diff_n_down &lt;int&gt;</span></span>
 <span id="cb18-18"><a href="#cb18-18" tabindex="-1"></a></span>
 <span id="cb18-19"><a href="#cb18-19" tabindex="-1"></a><span class="co"># Compare with the original values:</span></span>
 <span id="cb18-20"><a href="#cb18-20" tabindex="-1"></a>df1</span>
@@ -1297,7 +1299,7 @@ factory do the work for you:</p>
 <span id="cb20-16"><a href="#cb20-16" tabindex="-1"></a>out_total_n</span>
 <span id="cb20-17"><a href="#cb20-17" tabindex="-1"></a><span class="co">#&gt; # A tibble: 48 × 7</span></span>
 <span id="cb20-18"><a href="#cb20-18" tabindex="-1"></a><span class="co">#&gt;        y     n n_change consistency both_consistent  case dir  </span></span>
-<span id="cb20-19"><a href="#cb20-19" tabindex="-1"></a><span class="co">#&gt;    &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt; &lt;lgl&gt;       &lt;lgl&gt;           &lt;int&gt; &lt;chr&gt;</span></span>
+<span id="cb20-19"><a href="#cb20-19" tabindex="-1"></a><span class="co">#&gt;    &lt;dbl&gt; &lt;int&gt;    &lt;int&gt; &lt;lgl&gt;       &lt;lgl&gt;           &lt;int&gt; &lt;fct&gt;</span></span>
 <span id="cb20-20"><a href="#cb20-20" tabindex="-1"></a><span class="co">#&gt;  1    84    14        0 TRUE        FALSE               1 forth</span></span>
 <span id="cb20-21"><a href="#cb20-21" tabindex="-1"></a><span class="co">#&gt;  2    37    15        0 FALSE       FALSE               1 forth</span></span>
 <span id="cb20-22"><a href="#cb20-22" tabindex="-1"></a><span class="co">#&gt;  3    84    13       -1 TRUE        FALSE               1 forth</span></span>
@@ -1314,7 +1316,7 @@ factory do the work for you:</p>
 <span id="cb20-33"><a href="#cb20-33" tabindex="-1"></a><span class="fu">audit_total_n</span>(out_total_n)</span>
 <span id="cb20-34"><a href="#cb20-34" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 8</span></span>
 <span id="cb20-35"><a href="#cb20-35" tabindex="-1"></a><span class="co">#&gt;      y1    y2     n hits_total hits_forth hits_back scenarios_total hit_rate</span></span>
-<span id="cb20-36"><a href="#cb20-36" tabindex="-1"></a><span class="co">#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;           &lt;dbl&gt;    &lt;dbl&gt;</span></span>
+<span id="cb20-36"><a href="#cb20-36" tabindex="-1"></a><span class="co">#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt;      &lt;int&gt;      &lt;int&gt;     &lt;int&gt;           &lt;int&gt;    &lt;dbl&gt;</span></span>
 <span id="cb20-37"><a href="#cb20-37" tabindex="-1"></a><span class="co">#&gt; 1    84    37    29          4          0         4              12    0.333</span></span>
 <span id="cb20-38"><a href="#cb20-38" tabindex="-1"></a><span class="co">#&gt; 2    61    55    26         12          6         6              12    1</span></span></code></pre></div>
 <p>The same pattern can be applied to any other basic mapper function
@@ -1419,10 +1421,10 @@ function is generated on the basis of an earlier one.</p>
 <table>
 <colgroup>
 <col width="20%" />
-<col width="12%" />
-<col width="24%" />
-<col width="21%" />
-<col width="21%" />
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -1482,13 +1484,14 @@ Test: A Simple Technique Detects Numerous Anomalies in the Reporting of
 Results in Psychology.”</span> <em>Social Psychological and Personality
 Science</em> 8 (4): 363–69.
 </div>
-<div id="ref-wickham2015" class="csl-entry">
-Wickham, Hadley. 2015. <em>R Packages</em>. First edition. Sebastopol,
-CA: O’Reilly Media.
-</div>
 <div id="ref-wickham2019" class="csl-entry">
-———. 2019. <em>Advanced r</em>. Second edition. Boca Raton: CRC
-Press/Taylor; Francis Group.
+Wickham, Hadley. 2019. <em>Advanced r</em>. Second edition. Boca Raton:
+CRC Press/Taylor; Francis Group.
+</div>
+<div id="ref-wickham2023" class="csl-entry">
+Wickham, Hadley, and Jennifer Bryan. 2023. <em>R Packages: Organize,
+Test, Document, and Share Your Code</em>. Second edition. Beijing:
+O’Reilly.
 </div>
 </div>
 </div>

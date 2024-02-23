@@ -1,12 +1,9 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-
-## ----include=FALSE------------------------------------------------------------
-# Dev only: load scrutiny from within scrutiny
-devtools::load_all(".")
+pkgload::load_all()
 
 ## ----setup--------------------------------------------------------------------
 library(scrutiny)
@@ -38,17 +35,6 @@ df1 <- tibble::tibble(y = 16:25, n = 3:12)
 
 schlim_map(df1)
 
-## ----eval=FALSE---------------------------------------------------------------
-#  schlim_map <- function(...) "dummy"
-#  
-#  .onLoad <- function(lib, pkg) {
-#    schlim_map <<- scrutiny::function_map(
-#      .fun = schlim_scalar,
-#      .reported = c("y", "n"),
-#      .name_test = "SCHLIM"
-#    )
-#  }
-
 ## -----------------------------------------------------------------------------
 df2 <- df1
 names(df2) <- c("foo", "bar")
@@ -57,7 +43,7 @@ df2
 
 schlim_map(df2, y = foo, n = bar)
 
-## ---- error=TRUE--------------------------------------------------------------
+## ----error=TRUE---------------------------------------------------------------
 schlim_map(df2, y = foo)
 
 # With a wrong identification:
@@ -73,10 +59,12 @@ add_class <- scrutiny:::add_class
 ## -----------------------------------------------------------------------------
 schlim_map_alt1 <- function(data, ...) {
   scrutiny::check_mapper_input_colnames(data, c("y", "n"), "SCHLIM")
-  consistency <- purrr::pmap_lgl(data, schlim_scalar, ...)
-  out <- tibble::tibble(y = data$y, n = data$n, consistency)
-  out <- add_class(out, "scr_schlim_map")  # See section "S3 classes" below
-  out
+  tibble::tibble(
+    y = data$y,
+    n = data$n,
+    consistency = purrr::pmap_lgl(data, schlim_scalar, ...)
+  ) %>% 
+    add_class("scr_schlim_map")  # See section "S3 classes" below
 }
 
 ## -----------------------------------------------------------------------------
@@ -95,7 +83,7 @@ schlim_map_alt1(df1)
 
 schlim_map_alt2(df1)
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  add_class <- function(x, new_class) {
 #    class(x) <- c(new_class, class(x))
 #    x
@@ -110,7 +98,7 @@ class(some_object)
 df1_tested <- schlim_map(df1)
 class(df1_tested)
 
-## ---- error=TRUE--------------------------------------------------------------
+## ----error=TRUE---------------------------------------------------------------
 # The `name_test` argument is only for the alert
 # that might be issued by `check_audit_special()`:
 audit.scr_schlim_map <- function(data) {
@@ -131,7 +119,7 @@ write_doc_audit(sample_output = audit_grim,  name_test = "GRIM")
 
 write_doc_audit(sample_output = audit_grimmer, name_test = "GRIMMER")
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  grim_map_seq <- function_map_seq(
 #    .fun = grim_map,
 #    .reported = c("x", "n"),
@@ -172,7 +160,7 @@ df1 %>%
 # Compare with the original values:
 df1
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  grim_map_total_n <- function_map_total_n(
 #    .fun = grim_map,
 #    .reported = "x",  # don't include `n` here
@@ -212,12 +200,12 @@ out_total_n
 # Summarize:
 audit_total_n(out_total_n)
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  write_doc_audit_seq(key_args = c("x", "n"), name_test = "GRIM")
 #  write_doc_audit_seq(key_args = c("x", "sd", "n"), name_test = "GRIMMER")
 #  write_doc_audit_seq(key_args = c("x", "sd", "n"), name_test = "DEBIT")
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  write_doc_audit_total_n(key_args = c("x", "n"), name_test = "GRIM")
 #  write_doc_audit_total_n(key_args = c("x", "sd", "n"), name_test = "GRIMMER")
 #  write_doc_audit_total_n(key_args = c("x", "sd", "n"), name_test = "DEBIT")

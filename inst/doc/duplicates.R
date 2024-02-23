@@ -1,12 +1,8 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-
-## ----include=FALSE------------------------------------------------------------
-# Dev only: load scrutiny from within scrutiny
-devtools::load_all(".")
 
 ## ----setup--------------------------------------------------------------------
 library(scrutiny)

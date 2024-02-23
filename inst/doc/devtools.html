@@ -12,7 +12,7 @@
 
 
 
-<title>General infrastructure</title>
+<title>Developer tools</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -358,7 +358,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<h1 class="title toc-ignore">General infrastructure</h1>
+<h1 class="title toc-ignore">Developer tools</h1>
 
 
 
@@ -369,8 +369,8 @@ because they might be helpful in error detection more broadly, or
 perhaps even in other contexts.</p>
 <p>This vignette provides an overview of scrutiny’s miscellaneous
 infrastructure for implementing error detection techniques. For more
-specific articles, see <code>vignette(&quot;rounding&quot;)</code> or
-<code>vignette(&quot;consistency-tests&quot;)</code>.</p>
+specific articles, see <code>vignette(&quot;rounding-in-depth&quot;)</code> or
+<code>vignette(&quot;consistency-tests-simple&quot;)</code>.</p>
 <div id="count-decimal-places" class="section level2">
 <h2>Count decimal places</h2>
 <p>Large parts of the package ultimately rest on either of two functions
@@ -666,7 +666,7 @@ with the two integers closest to half.</p>
 <span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a><span class="fu">disperse_total</span>(<span class="at">n =</span> <span class="dv">70</span>)</span>
 <span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a><span class="co">#&gt; # A tibble: 12 × 2</span></span>
 <span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a><span class="co">#&gt;        n n_change</span></span>
-<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a><span class="co">#&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></span>
+<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a><span class="co">#&gt;    &lt;dbl&gt;    &lt;int&gt;</span></span>
 <span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a><span class="co">#&gt;  1    35        0</span></span>
 <span id="cb19-7"><a href="#cb19-7" tabindex="-1"></a><span class="co">#&gt;  2    35        0</span></span>
 <span id="cb19-8"><a href="#cb19-8" tabindex="-1"></a><span class="co">#&gt;  3    34       -1</span></span>
@@ -684,7 +684,7 @@ with the two integers closest to half.</p>
 <span id="cb19-20"><a href="#cb19-20" tabindex="-1"></a><span class="fu">disperse_total</span>(<span class="at">n =</span> <span class="dv">83</span>)</span>
 <span id="cb19-21"><a href="#cb19-21" tabindex="-1"></a><span class="co">#&gt; # A tibble: 12 × 2</span></span>
 <span id="cb19-22"><a href="#cb19-22" tabindex="-1"></a><span class="co">#&gt;        n n_change</span></span>
-<span id="cb19-23"><a href="#cb19-23" tabindex="-1"></a><span class="co">#&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></span>
+<span id="cb19-23"><a href="#cb19-23" tabindex="-1"></a><span class="co">#&gt;    &lt;dbl&gt;    &lt;int&gt;</span></span>
 <span id="cb19-24"><a href="#cb19-24" tabindex="-1"></a><span class="co">#&gt;  1    41        0</span></span>
 <span id="cb19-25"><a href="#cb19-25" tabindex="-1"></a><span class="co">#&gt;  2    42        0</span></span>
 <span id="cb19-26"><a href="#cb19-26" tabindex="-1"></a><span class="co">#&gt;  3    40       -1</span></span>

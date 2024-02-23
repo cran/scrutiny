@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Rounding in depth</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">
+
+div.csl-bib-body { }
+div.csl-entry {
+clear: both;
+}
+.hanging div.csl-entry {
+margin-left:2em;
+text-indent:-2em;
+}
+div.csl-left-margin {
+min-width:2em;
+float:left;
+}
+div.csl-right-inline {
+margin-left:2em;
+padding-left:1em;
+}
+div.csl-indent {
+margin-left: 2em;
+}
+</style>
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Rounding in depth</h1>
+
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(scrutiny)</span></code></pre></div>
+<p>Large parts of scrutiny are about rounding. This topic is more
+diverse and variegated than one might think. “Rounding” is often taken
+to simply mean rounding up from 5, and although that’s wrong, it doesn’t
+make much of a difference most of the time.</p>
+<p>One place where it does matter is in <em>reconstructing</em> the
+rounding procedures that others used, claim to have used, or are alleged
+to have used. In short, rounding and all its details matter for error
+detection.</p>
+<p>This vignette goes into depth on scrutiny’s infrastructure for
+reconstructing rounding procedures and results from summary statistics.
+All of that is essential for the package: it is a precondition for
+translating assumptions about the processes behind published summary
+data into a few simple, higher-level function calls. Some of the
+functions presented here might be useful beyond the package, as
+well.</p>
+<p>Feel free to skip the more theoretical parts if your focus is on the
+code. See <code>vignette(&quot;rounding-options&quot;)</code> for a list of
+possible values of the <code>rounding</code> argument in scrutiny
+functions.</p>
+<div id="overview" class="section level2">
+<h2>Overview</h2>
+<p>Base R’s <code>round()</code> function is surprisingly sophisticated.
+This distinguishes it from simpler rounding procedures, such as rounding
+up from 5. For this very reason, however, it can’t be used to
+reconstruct the rounding procedures of other software programs. This is
+the job of scrutiny’s rounding functions.</p>
+<p>First, I will present <code>reround()</code>, a general interface to
+reconstructing rounded numbers, before going through the individual
+rounding functions. I will also discuss <code>unround()</code>, which
+works the reverse way: It takes a rounded number and reconstructs the
+bounds of the original number, taking details about the assumed rounding
+procedure into account. Finally, I will take a closer look at bias from
+rounding raw numbers.</p>
+</div>
+<div id="reconstruct-rounded-numbers-with-reround" class="section level2">
+<h2>Reconstruct rounded numbers with <code>reround()</code></h2>
+<p>None of the error detection techniques in scrutiny calls the
+individual rounding functions directly. Instead, all of them call
+<code>reround()</code>, which mediates between these two levels.
+<code>reround()</code> takes the vector of “raw” reconstructed numbers
+that were not yet rounded in the way that’s assumed to have been the
+original rounding procedure. Its next argument is <code>digits</code>,
+the number of decimal places to round to.</p>
+<p>The remaining three arguments are about the rounding procedure. Most
+of the time, only <code>rounding</code> will be of any interest. It
+takes a string with the name of one of the rounding procedures discussed
+below.</p>
+<p>Here is an example for a <code>reround()</code> call:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">reround</span>(<span class="at">x =</span> <span class="fu">c</span>(<span class="fl">5.812</span>, <span class="fl">7.249</span>), <span class="at">digits =</span> <span class="dv">2</span>, <span class="at">rounding =</span> <span class="st">&quot;up&quot;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co">#&gt; [1] 5.81 7.25</span></span></code></pre></div>
+<p>The two remaining arguments are mostly forgettable: They only concern
+obscure cases of rounding with a threshold other than 5
+(<code>threshold</code>) and rounding such that the absolute values of
+positive and negative numbers are the same (<code>symmetric</code>).
+Ignore them otherwise.</p>
+</div>
+<div id="rounding-procedures-in-detail" class="section level2">
+<h2>Rounding procedures in detail</h2>
+<div id="up-and-down" class="section level3">
+<h3>Up and down</h3>
+<p><code>round_up()</code> does what most people think of as rounding.
+If the decimal portion to be cut off by rounding is 5 or greater, it
+rounds up. Otherwise, it rounds down.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">round_up</span>(<span class="at">x =</span> <span class="fl">1.24</span>, <span class="at">digits =</span> <span class="dv">1</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co">#&gt; [1] 1.2</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="fu">round_up</span>(<span class="at">x =</span> <span class="fl">1.25</span>, <span class="at">digits =</span> <span class="dv">1</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; [1] 1.3</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="fu">round_up</span>(<span class="at">x =</span> <span class="fl">1.25</span>)  <span class="co"># default for `digits` is 0</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; [1] 1</span></span></code></pre></div>
+<p>Rounding up from 5 is actually a special case of
+<code>round_up_from()</code>, which can take any numeric threshold, not
+just 5:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">round_up_from</span>(<span class="at">x =</span> <span class="fl">4.28</span>, <span class="at">digits =</span> <span class="dv">1</span>, <span class="at">threshold =</span> <span class="dv">9</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co">#&gt; [1] 4.2</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="fu">round_up_from</span>(<span class="at">x =</span> <span class="fl">4.28</span>, <span class="at">digits =</span> <span class="dv">1</span>, <span class="at">threshold =</span> <span class="dv">1</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt; [1] 4.3</span></span></code></pre></div>
+<p>These two functions have their mirror images in
+<code>round_down()</code> and <code>round_down_from()</code>. The
+arguments are the same as in <code>round_up()</code>:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">round_down</span>(<span class="at">x =</span> <span class="fl">1.24</span>, <span class="at">digits =</span> <span class="dv">1</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co">#&gt; [1] 1.2</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="fu">round_down</span>(<span class="at">x =</span> <span class="fl">1.25</span>, <span class="at">digits =</span> <span class="dv">1</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co">#&gt; [1] 1.2</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="fu">round_down</span>(<span class="at">x =</span> <span class="fl">1.25</span>)  <span class="co"># default for `digits` is 0</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co">#&gt; [1] 1</span></span></code></pre></div>
+<p><code>round_down_from()</code>, then, is just the reverse of
+<code>round_up_from()</code>:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">round_down_from</span>(<span class="at">x =</span> <span class="fl">4.28</span>, <span class="at">digits =</span> <span class="dv">1</span>, <span class="at">threshold =</span> <span class="dv">9</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">#&gt; [1] 4.3</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="fu">round_down_from</span>(<span class="at">x =</span> <span class="fl">4.28</span>, <span class="at">digits =</span> <span class="dv">1</span>, <span class="at">threshold =</span> <span class="dv">1</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt; [1] 4.2</span></span></code></pre></div>
+<p>Rounding up implements this formula:</p>
+<p><span class="math display">\[
+\frac{\lfloor x(10^d) +1 - \frac{t}{10} \rfloor}{10^d}
+\]</span></p>
+<p>where <span class="math inline">\(x\)</span> is the number to be
+rounded, <span class="math inline">\(d\)</span> is the number of decimal
+places to which <span class="math inline">\(x\)</span> should be
+rounded, and <span class="math inline">\(t\)</span> is the threshold for
+rounding up (e.g., <span class="math inline">\(t = 5\)</span> for
+rounding up from 5). Note that <span class="math inline">\(\lfloor n
+\rfloor\)</span> floors a number <span class="math inline">\(n\)</span>,
+and <span class="math inline">\(\lceil n \rceil\)</span> ceils it.</p>
+<p>Rounding down works accordingly. Note that <span class="math inline">\(+\)</span> and <span class="math inline">\(-\)</span> are reversed here:</p>
+<p><span class="math display">\[
+\frac{\lceil x(10^d) - 1 + \frac{t}{10} \rceil}{10^d}
+\]</span></p>
+</div>
+<div id="to-even-base-r" class="section level3">
+<h3>To even (base R)</h3>
+<p>Like Python’s <a href="https://docs.python.org/3/library/functions.html#round"><code>round()</code></a>
+function, R’s <code>base::round()</code> doesn’t round up or down, or
+use any other procedure based solely on the truncated part of the
+number. Instead, <code>round()</code> strives to round to the next even
+number. This is also called “banker’s rounding”, and it follows a
+technical standard, <a href="https://en.m.wikipedia.org/wiki/IEEE_754#Roundings_to_nearest">IEEE
+754</a>.</p>
+<p>Realizing that <code>round()</code> works in a highly unintuitive way
+sometimes leads to consternation. Why can’t we just round like we
+learned in school, that is, up from 5? The reason seems to be bias.
+Because 5 is right in between two whole numbers, any procedure that
+rounds 5 in some predetermined direction introduces a bias toward that
+direction. Rounding up from 5 is therefore biased upward, and rounding
+down from 5 is biased downward.</p>
+<p>As shown in the <em>Rounding bias</em> section below, this is
+unlikely to be a major issue when rounding raw numbers that originally
+have many decimal places. It might be more serious, however, if the
+initial number of decimal places is low (for whatever reason) and the
+need for precision is high.</p>
+<p>At least in theory, “rounding to even” is not biased in either
+direction, and it preserves the mean of the original distribution. That
+is how <code>round()</code> aims to operate. Here is a case in which it
+works out, whereas the bias of rounding up or down is fully
+apparent:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>vec1 <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="fl">0.5</span>, <span class="at">to =</span> <span class="fl">9.5</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>up1 <span class="ot">&lt;-</span> <span class="fu">round_up</span>(vec1)</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>down1 <span class="ot">&lt;-</span> <span class="fu">round_down</span>(vec1)</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>even1 <span class="ot">&lt;-</span> <span class="fu">round</span>(vec1)</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>vec1</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co">#&gt;  [1] 0.5 1.5 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>up1</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co">#&gt;  [1]  1  2  3  4  5  6  7  8  9 10</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>down1</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt;  [1] 0 1 2 3 4 5 6 7 8 9</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>even1</span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co">#&gt;  [1]  0  2  2  4  4  6  6  8  8 10</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="co"># Original mean</span></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="fu">mean</span>(vec1)</span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="co">#&gt; [1] 5</span></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="co"># Means when rounding up or down: bias!</span></span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a><span class="fu">mean</span>(up1)</span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a><span class="co">#&gt; [1] 5.5</span></span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a><span class="fu">mean</span>(down1)</span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a><span class="co">#&gt; [1] 4.5</span></span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a></span>
+<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a><span class="co"># Mean when rounding to even: no bias</span></span>
+<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a><span class="fu">mean</span>(even1)</span>
+<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a><span class="co">#&gt; [1] 5</span></span></code></pre></div>
+<p>However, this noble goal of unbiased rounding runs up against the
+reality of floating point arithmetic. You might therefore get results
+from <code>round()</code> that first seem bizarre, or at least
+unpredictable. Consider:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>vec2 <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="fl">4.5</span>, <span class="at">to =</span> <span class="fl">10.5</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>up2 <span class="ot">&lt;-</span> <span class="fu">round_up</span>(vec2)</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>down2 <span class="ot">&lt;-</span> <span class="fu">round_down</span>(vec2)</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>even2 <span class="ot">&lt;-</span> <span class="fu">round</span>(vec2)</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>vec1</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co">#&gt;  [1] 0.5 1.5 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>up2</span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co">#&gt; [1]  5  6  7  8  9 10 11</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>down2</span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt; [1]  4  5  6  7  8  9 10</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>even2  <span class="co"># No symmetry here...</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="co">#&gt; [1]  4  6  6  8  8 10 10</span></span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a></span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="fu">mean</span>(vec2)</span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a><span class="co">#&gt; [1] 7.5</span></span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a><span class="fu">mean</span>(up2)</span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a><span class="co">#&gt; [1] 8</span></span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a><span class="fu">mean</span>(down2)</span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a><span class="co">#&gt; [1] 7</span></span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a><span class="fu">mean</span>(even2)  <span class="co"># ... and the mean is slightly biased downward!</span></span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a><span class="co">#&gt; [1] 7.428571</span></span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a></span>
+<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a></span>
+<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a>vec3 <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a>  <span class="fl">1.05</span>, <span class="fl">1.15</span>, <span class="fl">1.25</span>, <span class="fl">1.35</span>, <span class="fl">1.45</span>,</span>
+<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a>  <span class="fl">1.55</span>, <span class="fl">1.65</span>, <span class="fl">1.75</span>, <span class="fl">1.85</span>, <span class="fl">1.95</span></span>
+<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a>)</span>
+<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a></span>
+<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a><span class="co"># No bias here, though:</span></span>
+<span id="cb8-33"><a href="#cb8-33" tabindex="-1"></a><span class="fu">round</span>(vec3, <span class="dv">1</span>)</span>
+<span id="cb8-34"><a href="#cb8-34" tabindex="-1"></a><span class="co">#&gt;  [1] 1.0 1.1 1.2 1.4 1.4 1.6 1.6 1.8 1.9 2.0</span></span>
+<span id="cb8-35"><a href="#cb8-35" tabindex="-1"></a><span class="fu">mean</span>(vec3)</span>
+<span id="cb8-36"><a href="#cb8-36" tabindex="-1"></a><span class="co">#&gt; [1] 1.5</span></span>
+<span id="cb8-37"><a href="#cb8-37" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">round</span>(vec3, <span class="dv">1</span>))</span>
+<span id="cb8-38"><a href="#cb8-38" tabindex="-1"></a><span class="co">#&gt; [1] 1.5</span></span></code></pre></div>
+<p>Sometimes <code>round()</code> behaves just as it should, but at
+other times, results can be hard to explain. Martin Mächler, who wrote
+the present version of <code>round()</code>, <a href="https://rpubs.com/maechler/Rounding">describes the issue</a> about
+as follows:</p>
+<p>The reason for the above behavior is that most decimal fractions
+can’t, in fact, be represented as double precision numbers. Even
+seemingly “clean” numbers with only a few decimal places come with a
+long invisible mantissa, and are therefore closer to one side or the
+other.</p>
+<p>We usually think that rounding rules are all about breaking a tie
+that occurs at 5. Most floating-point numbers, however, are just
+somewhat less than or greater than 5. There is no tie! Consequently,
+Mächler says, rounding functions need to “<em>measure, not guess</em>
+which of the two possible decimals is closer to <code>x</code>” — and
+therefore, which way to round.</p>
+<p>This seems better than following mathematical intuitions that may not
+always correspond to the way computers actually deal with numbers. R has
+used the present solution since version 4.0.0.</p>
+<p><code>base::round()</code> can seem like a black box, but it seems
+unbiased in the long run. I recommend using <code>round()</code> for
+original work, even though it is quite different from other rounding
+procedures — and therefore unsuitable for reconstructing them. Instead,
+we need something like scrutiny’s <code>round_*()</code> functions.</p>
+</div>
+<div id="ieee-754-rounding-standard" class="section level3">
+<h3>IEEE 754 rounding standard</h3>
+<p><code>base::round()</code> and some of scrutiny’s rounding functions
+correspond to the IEEE 754 rounding standard (IEEE 2019, pp. 27f.; the
+<a href="https://en.m.wikipedia.org/wiki/IEEE_754#Rounding_rules">Wikipedia
+page</a> is more accessible). IEEE 754 defines standards for
+floating-point operations, which includes rounding.</p>
+<p>This table shows how <code>base::round()</code> and scrutiny
+correspond to IEEE 754:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Function</th>
+<th>IEEE 754 attribute</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>base::round()</code></td>
+<td><em>roundTiesToEven</em></td>
+</tr>
+<tr class="even">
+<td><code>round_up()</code> with <code>symmetric = TRUE</code></td>
+<td><em>roundTiesToAway</em></td>
+</tr>
+<tr class="odd">
+<td><code>round_ceiling()</code></td>
+<td><em>roundTowardPositive</em></td>
+</tr>
+<tr class="even">
+<td><code>round_floor()</code></td>
+<td><em>roundTowardNegative</em></td>
+</tr>
+<tr class="odd">
+<td><code>round_trunc()</code></td>
+<td><em>roundTowardZero</em></td>
+</tr>
+</tbody>
+</table>
+<p>Admittedly, scrutiny’s rounding functions were written without this
+standard in mind. That is why their names don’t match those of the IEEE
+rounding procedures (or “rounding-direction attributes”), and why one of
+them requires the optional <code>symmetric</code> argument to meet the
+standard. A more straightforward mapping might be more desirable, and
+future breaking changes in a major version of scrutiny are not out of
+the question. However, other considerations apply, as well.</p>
+</div>
+</div>
+<div id="reconstruct-rounding-bounds-with-unround" class="section level2">
+<h2>Reconstruct rounding bounds with <code>unround()</code></h2>
+<p>Rounding leads to a loss of information. The mantissa is cut off in
+part or in full, and the resulting number is underdetermined with
+respect to the original number: The latter can’t be inferred from the
+former. It might be of interest, however, to compute the range of the
+original number given the rounded number (especially the number of
+decimal places to which it was rounded) and the presumed rounding
+method.</p>
+<p>While it’s often easy to infer such a range, we better have the
+computer do it. Enter <code>unround()</code>. It returns the lower and
+upper bounds, and it says whether these bounds are inclusive or not —
+something that varies greatly by rounding procedure. Currently,
+<code>unround()</code> is used as a helper within scrutiny’s DEBIT
+implementation; see <code>vignette(&quot;debit&quot;)</code>.</p>
+<p>The default rounding procedure for <code>unround()</code> is
+<code>&quot;up_or_down&quot;</code>:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">unround</span>(<span class="at">x =</span> <span class="st">&quot;8.0&quot;</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1 × 7</span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="co">#&gt;   range                  rounding   lower incl_lower x     incl_upper upper</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;                  &lt;chr&gt;      &lt;dbl&gt; &lt;lgl&gt;      &lt;chr&gt; &lt;lgl&gt;      &lt;dbl&gt;</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co">#&gt; 1 7.95 &lt;= x(8.0) &lt;= 8.05 up_or_down  7.95 TRUE       8.0   TRUE        8.05</span></span></code></pre></div>
+<p>For a complete list of featured rounding procedures, see
+documentation for <code>unround()</code>, section <em>Rounding</em>.</p>
+<p>On the left, the <code>range</code> column displays a pithy graphical
+overview of the other columns (except for <code>rounding</code>) in the
+same order:</p>
+<ol style="list-style-type: decimal">
+<li><code>lower</code> is the lower bound for the original number.</li>
+<li><code>incl_lower</code> is <code>TRUE</code> if the lower bound is
+inclusive and <code>FALSE</code> otherwise.</li>
+<li><code>x</code> is the input value.</li>
+<li><code>incl_upper</code> is <code>TRUE</code> if the upper bound is
+inclusive and <code>FALSE</code> otherwise.</li>
+<li><code>upper</code> is the upper bound for the original number.</li>
+</ol>
+<p>By default, decimal places are counted internally so that the
+function always operates on the appropriate decimal level. This creates
+a need to take trailing zeros into account, which is why <code>x</code>
+needs to be a string:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">unround</span>(<span class="at">x =</span> <span class="st">&quot;3.50&quot;</span>, <span class="at">rounding =</span> <span class="st">&quot;up&quot;</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1 × 7</span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="co">#&gt;   range                    rounding lower incl_lower x     incl_upper upper</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;                    &lt;chr&gt;    &lt;dbl&gt; &lt;lgl&gt;      &lt;chr&gt; &lt;lgl&gt;      &lt;dbl&gt;</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="co">#&gt; 1 3.495 &lt;= x(3.50) &lt; 3.505 up        3.50 TRUE       3.50  FALSE       3.50</span></span></code></pre></div>
+<p>Alternatively, a function that uses <code>unround()</code> as a
+helper might count decimal places by itself (i.e., by internally calling
+<code>decimal_places()</code>). It should then pass these numbers to
+<code>unround()</code> via the <code>decimals</code> argument instead of
+letting it redundantly count decimal places a second time.</p>
+<p>In this case, <code>x</code> can be numeric because trailing zeros
+are no longer needed. (That, in turn, is because the responsibility to
+count decimal places in number-strings rather than numeric values shifts
+from <code>unround()</code> to the higher-level function.)</p>
+<p>The following call returns the exact same tibble as above:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="fu">unround</span>(<span class="at">x =</span> <span class="fl">3.5</span>, <span class="at">digits =</span> <span class="dv">2</span>, <span class="at">rounding =</span> <span class="st">&quot;up&quot;</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1 × 7</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="co">#&gt;   range                   rounding lower incl_lower     x incl_upper upper</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;                   &lt;chr&gt;    &lt;dbl&gt; &lt;lgl&gt;      &lt;dbl&gt; &lt;lgl&gt;      &lt;dbl&gt;</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="co">#&gt; 1 3.495 &lt;= x(3.5) &lt; 3.505 up        3.50 TRUE         3.5 FALSE       3.50</span></span></code></pre></div>
+<p>Since <code>x</code> is vectorized, you might test several reported
+numbers at once:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>vec2 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="fl">3.1</span>, <span class="fl">3.5</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>  <span class="fu">restore_zeros</span>()</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>vec2   <span class="co"># `restore_zeros()` returns &quot;2.0&quot; for 2</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="co">#&gt; [1] &quot;2.0&quot; &quot;3.1&quot; &quot;3.5&quot;</span></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>vec2 <span class="sc">%&gt;%</span> </span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>  <span class="fu">unround</span>(<span class="at">rounding =</span> <span class="st">&quot;even&quot;</span>)</span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a><span class="co">#&gt; # A tibble: 3 × 7</span></span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a><span class="co">#&gt;   range                rounding lower incl_lower x     incl_upper upper</span></span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;                &lt;chr&gt;    &lt;dbl&gt; &lt;lgl&gt;      &lt;chr&gt; &lt;lgl&gt;      &lt;dbl&gt;</span></span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a><span class="co">#&gt; 1 1.95 &lt; x(2.0) &lt; 2.05 even      1.95 FALSE      2.0   FALSE       2.05</span></span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a><span class="co">#&gt; 2 3.05 &lt; x(3.1) &lt; 3.15 even      3.05 FALSE      3.1   FALSE       3.15</span></span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a><span class="co">#&gt; 3 3.45 &lt; x(3.5) &lt; 3.55 even      3.45 FALSE      3.5   FALSE       3.55</span></span></code></pre></div>
+</div>
+<div id="fractional-rounding" class="section level2">
+<h2>Fractional rounding</h2>
+<p>What if you want to round numbers to a fraction instead of an
+integer? Check out <code>reround_to_fraction()</code> and
+<code>reround_to_fraction_level()</code>:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="fu">reround_to_fraction</span>(<span class="at">x =</span> <span class="fl">0.4</span>, <span class="at">denominator =</span> <span class="dv">2</span>, <span class="at">rounding =</span> <span class="st">&quot;up&quot;</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="co">#&gt; [1] 0.5</span></span></code></pre></div>
+<p>This function rounds <code>0.4</code> to <code>0.5</code> because
+that’s the closest fraction of <code>2</code>. It is inspired by
+<code>janitor::round_to_fraction()</code>, and credit for the core
+implementation goes there. <code>reround_to_fraction()</code> blends
+janitor’s fractional rounding with the flexibility and precision that
+<code>reround()</code> provides.</p>
+<p>What’s more, <code>reround_to_fraction_level()</code> rounds to the
+nearest fraction at the decimal level specified via its
+<code>digits</code> argument:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="fu">reround_to_fraction_level</span>(</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>  <span class="at">x =</span> <span class="fl">0.777</span>, <span class="at">denominator =</span> <span class="dv">5</span>, <span class="at">digits =</span> <span class="dv">0</span>, <span class="at">rounding =</span> <span class="st">&quot;down&quot;</span></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>)</span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a><span class="co">#&gt; [1] 0.8</span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="fu">reround_to_fraction_level</span>(</span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>  <span class="at">x =</span> <span class="fl">0.777</span>, <span class="at">denominator =</span> <span class="dv">5</span>, <span class="at">digits =</span> <span class="dv">1</span>, <span class="at">rounding =</span> <span class="st">&quot;down&quot;</span></span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a>)</span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a><span class="co">#&gt; [1] 0.78</span></span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a><span class="fu">reround_to_fraction_level</span>(</span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a>  <span class="at">x =</span> <span class="fl">0.777</span>, <span class="at">denominator =</span> <span class="dv">5</span>, <span class="at">digits =</span> <span class="dv">2</span>, <span class="at">rounding =</span> <span class="st">&quot;down&quot;</span></span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a>)</span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a><span class="co">#&gt; [1] 0.776</span></span></code></pre></div>
+<p>These two functions are not currently part of any error detection
+workflow.</p>
+</div>
+<div id="rounding-bias" class="section level2">
+<h2>Rounding bias</h2>
+<p>I wrote above that rounding up or down from 5 is biased. However,
+this points to a wider problem: It is true of any rounding procedure
+that doesn’t take active precautions against such bias.
+<code>base::round()</code> does, and that is why I recommend it for
+original work (as opposed to reconstruction).</p>
+<p>It might be useful to have a general and flexible way to quantify how
+far rounding biases a distribution, as compared to how it looked like
+before rounding. The function <code>rounding_bias()</code> fulfills this
+role. It is a wrapper around <code>reround()</code>, so it can access
+any rounding procedure that <code>reround()</code> can, and takes all of
+the same arguments. However, the default for <code>rounding</code> is
+<code>&quot;up&quot;</code> instead of <code>&quot;up_or_down&quot;</code> because
+<code>rounding_bias()</code> only makes sense with single rounding
+procedures.</p>
+<p>In general, bias due to rounding is computed by subtracting the
+original distribution from the rounded one:</p>
+<p><span class="math display">\[
+bias = x_{rounded} - x
+\]</span></p>
+<p>By default, the mean is computed to reduce the bias to a single data
+point:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>vec3 <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="fl">0.6</span>, <span class="at">to =</span> <span class="fl">0.7</span>, <span class="at">by =</span> <span class="fl">0.01</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>vec3</span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="co">#&gt;  [1] 0.60 0.61 0.62 0.63 0.64 0.65 0.66 0.67 0.68 0.69 0.70</span></span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a><span class="co"># The mean before rounding...</span></span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a><span class="fu">mean</span>(vec3)</span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a><span class="co">#&gt; [1] 0.65</span></span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a></span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a><span class="co"># ...is not the same as afterwards...</span></span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">round_up</span>(vec3))</span>
+<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a><span class="co">#&gt; [1] 1</span></span>
+<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a></span>
+<span id="cb15-14"><a href="#cb15-14" tabindex="-1"></a><span class="co"># ...and the difference is bias:</span></span>
+<span id="cb15-15"><a href="#cb15-15" tabindex="-1"></a><span class="fu">rounding_bias</span>(<span class="at">x =</span> vec3, <span class="at">digits =</span> <span class="dv">0</span>, <span class="at">rounding =</span> <span class="st">&quot;up&quot;</span>)</span>
+<span id="cb15-16"><a href="#cb15-16" tabindex="-1"></a><span class="co">#&gt; [1] 0.35</span></span></code></pre></div>
+<p>Set <code>mean</code> to <code>FALSE</code> to return the whole
+vector of individual biases instead:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">rounding_bias</span>(<span class="at">x =</span> vec3, <span class="at">digits =</span> <span class="dv">0</span>, <span class="at">rounding =</span> <span class="st">&quot;up&quot;</span>, <span class="at">mean =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="co">#&gt;  [1] 0.40 0.39 0.38 0.37 0.36 0.35 0.34 0.33 0.32 0.31 0.30</span></span></code></pre></div>
+<p>Admittedly, this example is somewhat overdramatic. Here is a rather
+harmless one:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>vec4 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">50000</span>, <span class="dv">100</span>, <span class="dv">15</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="fu">rounding_bias</span>(vec4, <span class="at">digits =</span> <span class="dv">2</span>)</span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="co">#&gt; [1] -1.416362e-05</span></span></code></pre></div>
+<p>What is responsible for such a difference? It seems to be (1) the
+sample size and (2) the number of decimal places to which the vector is
+rounded. The rounding method doesn’t appear to matter if numbers with
+many decimal places are rounded:</p>
+<pre><code>#&gt; # A tibble: 10 × 3
+#&gt;             bias decimal_digits rounding
+#&gt;            &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt;   
+#&gt;  1 0.000165      1 up           up      
+#&gt;  2 0.0000142     2 up           up      
+#&gt;  3 0.000000944   3 up           up      
+#&gt;  4 0.0000000144  4 up           up      
+#&gt;  5 0.00000000278 5 up           up      
+#&gt;  6 0.000165      1 even         even    
+#&gt;  7 0.0000142     2 even         even    
+#&gt;  8 0.000000944   3 even         even    
+#&gt;  9 0.0000000144  4 even         even    
+#&gt; 10 0.00000000278 5 even         even</code></pre>
+<p><img src="data:image/png;base64,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DPHKDETgMWrUqACuZWj06NHhhx9+aBH13XffDV9//XWL52Ue/PTTT/pt+G0KsRfMqW0IHHnkkeynS+644466CZ199tka529/+1saZ+ONN05mnHHG9L53797J2muvnVx44YVJ9+7dE5nO6TURZEqXHHfcccn000+v6ZBfr169kgceeCB93y5E8khkyqPvE2+SSSZJ9tprr0Q6q0YR3VQy6aSTajqTTTZZIlMwfb7iiismMo3Ua2ECer3yyitbsukv6QhDTShvHt12223JFFNMkUw00UT6x/Vqq62WDBs2TJ/fcsstiUzHNH9+hdFqMtRFpMS0ftRfdEiJMIQ0G2HmmsbQoUMT6kEc6kh5RH+SSEdORI+ViOSlz2eZZZbkvvvuS9+vd1GEvXTkZOutt06mmmqqtGzUCUzByUikX62nTKuTBRdcMI278MILJ6LTsWjp70033ZQst9xySbdu3fR7b7jhhskZZ5yh7915551pPGE4yV/+8pe0rtSX9O+66640DhfkL7pIra8MbpoOOGy55Zb67cF9rrnmSsu13XbbJf/v//2/mjSyNzHe/fr1U+zJXwaV5IADDqh5f6211tLvkE1j8ODB+l5cXisrnNypjQiUYUAvvfSSfngarRFMgg9pRCelw0w55ZTJpptumqyyyiqJTF80eNttt9X3iXPllVcm1113XfKHP/xBOzid0Uh0OIkofJM555wzueKKKxIa8h//+Ed997zzztNodJAdd9xRn1F20oJiBsS9vffqq69ymxJp0ghJP4/eeeedRBTOyeyzz57MOuusen3PPfckoifT9+gECyywQLL99tvrH2lQTzqiKKw13XvvvTc5+OCD9dmiiy6aNvR//vOfmsZss82WLLPMMsnFF1+cHHHEEck000yjzJkOLTqnRKa3yUknnaTMF0xFEsgravqsHvYiPWqn5ZscffTRiieDybLLLqvlOOaYY9I0GDxmmGEGLQvfj44nCw1aBwYakcrSuDAkmANlFT1cAjMCfwYLsI0ZkCxo6LPdd99dmQ7fH0yIB85Glj/M8aCDDkpE/5ZQL+Kts846ybTTTpv86U9/Sv7+979r2+L5ueeea6/n/hretKd55503OfbYY5PLL788+f3vf6/pnnnmmel72fZjAcQnr3iAtrI6AzKU2vBbhgGJvkU/Ag3CKI8B8aHOOecci6K/1nEZNWKi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KbNiirPFFluEnXbaSVNHcVkvjAj18mhLmGbs/xwBR6CpCHQ4A6L0nKWOpAMTakRffvllmHLKKX9V9EYvFIUV5dHasChrv3QEHIEmIDBOGFATyu1JOAKOQCdAoEN1QBMiXu+9957aHhWVHWnupZdeKorSMIxpJSYGjchsobCHev/998Mrr7zS6JXUfoqI2C2VeSdOlH17ZWbqH3zwQRg9erTm8emnn4YXXnih4XtWn9aUjTKR588//xwXN/faymaBGMCCRRFl3ylTn2x67GP87LPPso9r7mk/4IBkzt8bb7wRaHdFmLelbJaP/dKW6lG2bb/zzjtqo1cvft7zonecAeUh9r9nL7/8suqlmOoV0Y033lizYlcUNy+MjrD//vurgj4v3J6xL+6GG24IZ511Vth6663DIYccEg466KDwxBP1De94h/KZrRIrjujIyjC7e+65J2y//faaD1br5F2P6Czs67v00kvDH//4x7DXXnuFk08+Odxyyy31XtF9fq0tG4sS22yzTTj88MPDJptsEp577rm6+VjZzKSDRQ10j4MGDSr9DhFHjhwZ7r333rrvZAN+EgPGgw8+OAwcODAbVHMPBvytvfba+rfLLrvoLgH0onmUrQ9xypYNZmD52G8RDpQrXo1GHztgwIC8YtV9VviOVMYpg4CMqMmtt96abLDBBsnKK6+ciFV2JsavtyK5JHvuuWfCO62hV199NRHlerLaaqsl119/fWESRx55ZCJMIBFlfSKrgxpXOn2y6aab1n2Pd2RErQl/5plnEmFiNc+yN8IUtf7//ve/NUikrUQabCKSTTaq3svKYyILA4kwn0RGTcXj0EMPTWQTcfLDDz/kvtPasolBqpYN7CBhCoUYUDZhuhr3xx9/THbbbbdEVlQTYa51yxa/oy/KP+rxpz/9qe47Fs9+hfEoZqeffro9avFr7QcsZN+jpk0+wrwTYaot4vOgLWWT7UyJDA5pPuQFJnlkZcu27dNOOy15/vnn816p+6zeOxMfJ1SXdXXRAEZTTACOPvrocOedd4Ztt91WV+ry4GDEn3/++cOSSy6pwfIFdNRnwy17z7DgnmOOOcLw4cN1I+7vf//7NBlhOOGcc87RkRwrb0Yx9rkxfVlkkUVCt27d9Jod/IyGd911l4rzq6++urooGTFiRFhllVXC1VdfHeabbz5N/w9/+EP4xz/+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" /><!-- --></p>
+<p>However, if the raw values are preliminarily rounded to 2 decimal
+places before rounding proceeds as above, the picture is different:</p>
+<pre><code>#&gt; # A tibble: 10 × 3
+#&gt;        bias decimal_digits rounding
+#&gt;       &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt;   
+#&gt;  1 0.00519  1 up           up      
+#&gt;  2 0        2 up           up      
+#&gt;  3 0        3 up           up      
+#&gt;  4 0        4 up           up      
+#&gt;  5 0        5 up           up      
+#&gt;  6 0.000191 1 even         even    
+#&gt;  7 0        2 even         even    
+#&gt;  8 0        3 even         even    
+#&gt;  9 0        4 even         even    
+#&gt; 10 0        5 even         even</code></pre>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>In sum, the function allows users to quantify the degree to which
+rounding biases a distribution, so that they can assess the relative
+merits of different rounding procedures. This is partly to sensitize
+readers to potential bias in edge cases, but also to enable them to make
+informed rounding decisions on their own.</p>
+<div id="citation-dummy" class="section level3" style="display: none;">
+<h3 style="display: none;">Citation dummy</h3>
+<p><em>(Here is an extra section. Its display is suppressed via the CSS
+element <code>display: none;</code> because its only purpose is to
+generate the citation <span class="citation">IEEE (2019)</span> — I want
+to style the citation in the text above more flexibly than the format
+allows (without parentheses) but still get the reference pasted at the
+bottom.)</em></p>
+</div>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1 class="unnumbered">References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-ieee2019" class="csl-entry">
+IEEE. 2019. <span>“IEEE Standard for Floating-Point Arithmetic.”</span>
+<a href="https://doi.org/10.1109/IEEESTD.2019.8766229">https://doi.org/10.1109/IEEESTD.2019.8766229</a>.
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

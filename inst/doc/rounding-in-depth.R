@@ -1,12 +1,8 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-
-## ----include=FALSE------------------------------------------------------------
-# Dev only: load scrutiny from within scrutiny
-devtools::load_all(".")
 
 ## ----setup, message=FALSE-----------------------------------------------------
 library(scrutiny)
@@ -69,6 +65,7 @@ even2 <- round(vec2)
 vec1
 up2
 down2
+
 even2  # No symmetry here...
 
 mean(vec2)

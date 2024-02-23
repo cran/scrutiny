@@ -424,7 +424,7 @@ that are discussed in <code>vignette(&quot;wrangling&quot;)</code>, but here, I
 will only describe an easily accessible solution for a single table.</p>
 <p>Copy summary data from a PDF file and paste them into
 <code>tibble::tribble()</code>, which is available via scrutiny:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>flying_pigs1 <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>flying_pigs1 <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tribble</span>(</span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="sc">~</span>x,   <span class="sc">~</span>sd,</span>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="st">&quot;8.9&quot;</span>,  <span class="st">&quot;2.81&quot;</span>,</span>
 <span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="st">&quot;2.6&quot;</span>,  <span class="st">&quot;2.05&quot;</span>,</span>
@@ -434,7 +434,7 @@ will only describe an easily accessible solution for a single table.</p>
 <span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="st">&quot;10.4&quot;</span>, <span class="st">&quot;2.53&quot;</span>,</span>
 <span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="st">&quot;7.3&quot;</span>,  <span class="st">&quot;3.14&quot;</span></span>
 <span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">n =</span> <span class="dv">25</span>)</span></code></pre></div>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">n =</span> <span class="dv">25</span>)</span></code></pre></div>
 <p>Use RStudio’s multiple cursors to draw quotation marks around all the
 <code>x</code> and <code>sd</code> values, and to set commas at the end.
 See <code>vignette(&quot;wrangling&quot;)</code>, section <em>With copy and
@@ -472,7 +472,7 @@ release.</strong></p>
 parameter to that number. Below are hypothetical means of a three-items
 scale. With the single-item default, half of these are wrongly flagged
 as inconsistent:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>jpap_1 <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>jpap_1 <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tribble</span>(</span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>   <span class="sc">~</span>x,    <span class="sc">~</span>sd,</span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="st">&quot;5.90&quot;</span>, <span class="st">&quot;2.19&quot;</span>,</span>
 <span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="st">&quot;5.71&quot;</span>, <span class="st">&quot;1.42&quot;</span>,</span>
@@ -481,7 +481,7 @@ as inconsistent:</p>
 <span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  <span class="st">&quot;4.61&quot;</span>, <span class="st">&quot;1.92&quot;</span>,</span>
 <span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  <span class="st">&quot;5.24&quot;</span>, <span class="st">&quot;2.51&quot;</span>,</span>
 <span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>) <span class="sc">%&gt;%</span> </span>
-<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">n =</span> <span class="dv">40</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">n =</span> <span class="dv">40</span>)</span>
 <span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a></span>
 <span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>jpap_1 <span class="sc">%&gt;%</span> </span>
 <span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>  <span class="fu">grimmer_map</span>()  <span class="co"># default is wrong here!</span></span>
@@ -521,7 +521,7 @@ stated:</p>
 <span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a><span class="co">#&gt; 6 5.24  2.51    120 TRUE        Passed all</span></span></code></pre></div>
 <p>It is also possible to include an <code>items</code> column in the
 data frame instead:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>jpap_2 <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>jpap_2 <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tribble</span>(</span>
 <span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>   <span class="sc">~</span>x,     <span class="sc">~</span>sd,    <span class="sc">~</span>items,</span>
 <span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="st">&quot;6.92&quot;</span>,  <span class="st">&quot;2.19&quot;</span>,  <span class="dv">1</span>,</span>
 <span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="st">&quot;3.48&quot;</span>,  <span class="st">&quot;1.42&quot;</span>,  <span class="dv">1</span>,</span>
@@ -530,7 +530,7 @@ data frame instead:</p>
 <span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  <span class="st">&quot;4.04&quot;</span>,  <span class="st">&quot;1.92&quot;</span>,  <span class="dv">3</span>,</span>
 <span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>  <span class="st">&quot;4.50&quot;</span>,  <span class="st">&quot;2.51&quot;</span>,  <span class="dv">3</span>,</span>
 <span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">n =</span> <span class="dv">30</span>)</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">n =</span> <span class="dv">30</span>)</span>
 <span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a></span>
 <span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>jpap_2 <span class="sc">%&gt;%</span> </span>
 <span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>  <span class="fu">grimmer_map</span>()</span>
@@ -551,54 +551,6 @@ data frame instead:</p>
 <span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a><span class="co">#&gt; 4 2.61  2.43     60 FALSE       GRIM inconsistent</span></span>
 <span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a><span class="co">#&gt; 5 4.04  1.92     90 TRUE        Passed all       </span></span>
 <span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a><span class="co">#&gt; 6 4.50  2.51     90 TRUE        Passed all</span></span></code></pre></div>
-</div>
-<div id="rounding" class="section level3">
-<h3>Rounding</h3>
-<p>The scrutiny package provides infrastructure for reconstructing
-rounded numbers. All of that can be commanded from within
-<code>grimmer()</code> and <code>grimmer_map()</code>. Several
-parameters allow for stating the precise way in which the original
-numbers have supposedly been rounded.</p>
-<p>First and foremost is <code>rounding</code>. It takes a string with
-the rounding procedure’s name, which leads to the number being rounded
-in either of these ways:</p>
-<ol style="list-style-type: decimal">
-<li>Rounded <code>&quot;up&quot;</code> or <code>&quot;down&quot;</code> from 5. Note that
-SAS, SPSS, Stata, Matlab, and Excel round <code>&quot;up&quot;</code> from 5,
-whereas Python used to round <code>&quot;down&quot;</code> from 5.</li>
-<li>Rounded to <code>&quot;even&quot;</code> using base R’s own
-<code>round()</code>.</li>
-<li>Rounded <code>&quot;up_from&quot;</code> or <code>&quot;down_from&quot;</code> some
-number, which then needs to be specified via the <code>threshold</code>
-parameter.</li>
-<li>Given a <code>&quot;ceiling&quot;</code> or <code>&quot;floor&quot;</code> at the
-respective decimal place.</li>
-<li>Rounded towards zero with <code>&quot;trunc&quot;</code> or away from zero
-with <code>&quot;anti_trunc&quot;</code>.</li>
-</ol>
-<p>The default, <code>&quot;up_or_down&quot;</code>, allows for numbers rounded
-either <code>&quot;up&quot;</code> or <code>&quot;down&quot;</code> from 5 when
-GRIMMER-testing; and likewise for <code>&quot;up_from_or_down_from&quot;</code>
-and <code>&quot;ceiling_or_floor&quot;</code>. For more about these procedures,
-see documentation for <code>round()</code>, <code>round_up()</code>, and
-<code>round_ceiling()</code>. These include all of the above ways of
-rounding.</p>
-<p>Points 3 to 5 above list some quite obscure options that were only
-included to cover a wide spectrum of possible rounding procedures. The
-same is true for the <code>threshold</code> and <code>symmetric</code>
-parameters, so these aren’t discussed here any further. Learn more about
-scrutiny’s infrastructure for rounding at
-<code>vignette(&quot;rounding&quot;)</code>.</p>
-<p>By default, <code>grimmer()</code> and <code>grimmer_map()</code>
-accept values rounded either up or down from 5. If you have reason to
-impose stricter assumptions on the way <code>x</code> and
-<code>sd</code> were rounded, specify <code>rounding</code>
-accordingly.</p>
-<p>It might still be important to account for the different ways in
-which numbers can be rounded, if only to demonstrate that some given
-results are robust to those variable decisions. To err on the side of
-caution, the default for <code>rounding</code> is the permissive
-<code>&quot;up_or_down&quot;</code>.</p>
 </div>
 </div>
 <div id="summarizing-results-with-audit" class="section level2">
@@ -631,7 +583,7 @@ respectively.</p></li>
 scrutiny. However, <code>grim_plot()</code> will accept the output of
 <code>grimmer_map()</code> just as well as that from
 <code>grim_map()</code>:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>jpap_5 <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>jpap_5 <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tribble</span>(</span>
 <span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  <span class="sc">~</span>x,      <span class="sc">~</span>sd,    <span class="sc">~</span>n,</span>
 <span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="st">&quot;7.19&quot;</span>,  <span class="st">&quot;1.19&quot;</span>,  <span class="dv">54</span>,</span>
 <span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  <span class="st">&quot;4.56&quot;</span>,  <span class="st">&quot;2.56&quot;</span>,  <span class="dv">66</span>,</span>
@@ -656,9 +608,10 @@ returned by either of these two functions:</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">grim_plot</span>(mtcars)</span>
 <span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="co">#&gt; Error in `grim_plot()`:</span></span>
 <span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="co">#&gt; ! `grim_plot()` needs GRIM or GRIMMER test results.</span></span>
-<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co">#&gt; ✖ `data` is not `grim_map()` or `grimmer_map()` output.</span></span>
-<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="co">#&gt; ℹ The only exception is an &quot;empty&quot; plot that shows the background raster but no</span></span>
-<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="co">#&gt;   empirical test results. Create such a plot by setting `show_data` to `FALSE`.</span></span></code></pre></div>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co">#&gt; ✖ `data` is not the output of `grim_map()`, `grim_map_seq()`, or</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="co">#&gt;   `grim_map_total_n()`; or of the respective `grimmer_*()` functions.</span></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="co">#&gt; ℹ The only exception is an &quot;empty&quot; plot that shows the background raster but no</span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="co">#&gt;   empirical test results. Create such a plot with `show_data = FALSE`.</span></span></code></pre></div>
 <p>See the <a href="https://lhdjung.github.io/scrutiny/articles/grim.html#visualizing-results-with-grim_plot">GRIM
 vignette section</a> on <code>grim_plot()</code> for more
 information.</p>
@@ -673,19 +626,19 @@ are due to small reporting or computing errors.</p>
 surrounding the reported means and sample sizes:</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>out_seq1 <span class="ot">&lt;-</span> <span class="fu">grimmer_map_seq</span>(pigs5)</span>
 <span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>out_seq1</span>
-<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="co">#&gt; # A tibble: 180 × 7</span></span>
-<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">#&gt;    x     sd        n consistency reason             case var  </span></span>
-<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt; &lt;lgl&gt;       &lt;chr&gt;             &lt;int&gt; &lt;chr&gt;</span></span>
-<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="co">#&gt;  1 7.17  5.30     38 FALSE       GRIM inconsistent     1 x    </span></span>
-<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="co">#&gt;  2 7.18  5.30     38 TRUE        Passed all            1 x    </span></span>
-<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="co">#&gt;  3 7.19  5.30     38 FALSE       GRIM inconsistent     1 x    </span></span>
-<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a><span class="co">#&gt;  4 7.20  5.30     38 FALSE       GRIM inconsistent     1 x    </span></span>
-<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a><span class="co">#&gt;  5 7.21  5.30     38 TRUE        Passed all            1 x    </span></span>
-<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a><span class="co">#&gt;  6 7.23  5.30     38 FALSE       GRIM inconsistent     1 x    </span></span>
-<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a><span class="co">#&gt;  7 7.24  5.30     38 TRUE        Passed all            1 x    </span></span>
-<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a><span class="co">#&gt;  8 7.25  5.30     38 FALSE       GRIM inconsistent     1 x    </span></span>
-<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a><span class="co">#&gt;  9 7.26  5.30     38 TRUE        Passed all            1 x    </span></span>
-<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a><span class="co">#&gt; 10 7.27  5.30     38 FALSE       GRIM inconsistent     1 x    </span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="co">#&gt; # A tibble: 180 × 8</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">#&gt;    x     sd        n consistency reason            diff_var  case var  </span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt; &lt;chr&gt; &lt;int&gt; &lt;lgl&gt;       &lt;chr&gt;                &lt;int&gt; &lt;int&gt; &lt;chr&gt;</span></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="co">#&gt;  1 7.17  5.30     38 FALSE       GRIM inconsistent       -5     1 x    </span></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="co">#&gt;  2 7.18  5.30     38 TRUE        Passed all              -4     1 x    </span></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="co">#&gt;  3 7.19  5.30     38 FALSE       GRIM inconsistent       -3     1 x    </span></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a><span class="co">#&gt;  4 7.20  5.30     38 FALSE       GRIM inconsistent       -2     1 x    </span></span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a><span class="co">#&gt;  5 7.21  5.30     38 TRUE        Passed all              -1     1 x    </span></span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a><span class="co">#&gt;  6 7.23  5.30     38 FALSE       GRIM inconsistent        1     1 x    </span></span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a><span class="co">#&gt;  7 7.24  5.30     38 TRUE        Passed all               2     1 x    </span></span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a><span class="co">#&gt;  8 7.25  5.30     38 FALSE       GRIM inconsistent        3     1 x    </span></span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a><span class="co">#&gt;  9 7.26  5.30     38 TRUE        Passed all               4     1 x    </span></span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a><span class="co">#&gt; 10 7.27  5.30     38 FALSE       GRIM inconsistent        5     1 x    </span></span>
 <span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a><span class="co">#&gt; # ℹ 170 more rows</span></span></code></pre></div>
 <div id="summaries-with-audit_seq" class="section level3">
 <h3>Summaries with <code>audit_seq()</code></h3>
@@ -694,16 +647,16 @@ the results:</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">audit_seq</span>(out_seq1)</span>
 <span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 17</span></span>
 <span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co">#&gt;   x     sd        n consistency hits_total hits_x hits_sd hits_n diff_x</span></span>
-<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt; &lt;lgl&gt;            &lt;int&gt;  &lt;int&gt;   &lt;int&gt;  &lt;int&gt;  &lt;dbl&gt;</span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt; &lt;chr&gt; &lt;int&gt; &lt;lgl&gt;            &lt;int&gt;  &lt;int&gt;   &lt;int&gt;  &lt;int&gt;  &lt;int&gt;</span></span>
 <span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="co">#&gt; 1 7.22  5.30     38 FALSE                8      4       0      4      1</span></span>
 <span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="co">#&gt; 2 5.23  2.55     35 FALSE               16      2      10      4      3</span></span>
 <span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a><span class="co">#&gt; 3 2.57  2.57     30 FALSE               11      1       8      2      3</span></span>
 <span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="co">#&gt; 4 6.77  2.18     33 FALSE                6      4       0      2      1</span></span>
 <span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a><span class="co">#&gt; 5 7.01  6.68     35 FALSE                4      4       0      0      1</span></span>
 <span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a><span class="co">#&gt; 6 3.14  5.32     33 FALSE                9      4       0      5      1</span></span>
-<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a><span class="co">#&gt; # ℹ 8 more variables: diff_x_up &lt;dbl&gt;, diff_x_down &lt;dbl&gt;, diff_sd &lt;dbl&gt;,</span></span>
-<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a><span class="co">#&gt; #   diff_sd_up &lt;dbl&gt;, diff_sd_down &lt;dbl&gt;, diff_n &lt;dbl&gt;, diff_n_up &lt;dbl&gt;,</span></span>
-<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a><span class="co">#&gt; #   diff_n_down &lt;dbl&gt;</span></span></code></pre></div>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a><span class="co">#&gt; # ℹ 8 more variables: diff_x_up &lt;int&gt;, diff_x_down &lt;int&gt;, diff_sd &lt;int&gt;,</span></span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a><span class="co">#&gt; #   diff_sd_up &lt;int&gt;, diff_sd_down &lt;int&gt;, diff_n &lt;int&gt;, diff_n_up &lt;int&gt;,</span></span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a><span class="co">#&gt; #   diff_n_down &lt;int&gt;</span></span></code></pre></div>
 <p>Here is what the output columns mean:</p>
 <ul>
 <li><p><code>x</code> and <code>n</code> are the original inputs,
@@ -726,16 +679,16 @@ longer, the number of hits tends to increase:</p>
 <span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="fu">audit_seq</span>(out_seq2)</span>
 <span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 17</span></span>
 <span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="co">#&gt;   x     sd        n consistency hits_total hits_x hits_sd hits_n diff_x</span></span>
-<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt; &lt;lgl&gt;            &lt;int&gt;  &lt;int&gt;   &lt;int&gt;  &lt;int&gt;  &lt;dbl&gt;</span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt; &lt;chr&gt; &lt;int&gt; &lt;lgl&gt;            &lt;int&gt;  &lt;int&gt;   &lt;int&gt;  &lt;int&gt;  &lt;int&gt;</span></span>
 <span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a><span class="co">#&gt; 1 7.22  5.30     38 FALSE               15      8       0      7      1</span></span>
 <span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a><span class="co">#&gt; 2 5.23  2.55     35 FALSE               32      6      19      7      3</span></span>
 <span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a><span class="co">#&gt; 3 2.57  2.57     30 FALSE               24      3      16      5      3</span></span>
 <span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a><span class="co">#&gt; 4 6.77  2.18     33 FALSE               11      7       0      4      1</span></span>
 <span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a><span class="co">#&gt; 5 7.01  6.68     35 FALSE                8      8       0      0      1</span></span>
 <span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a><span class="co">#&gt; 6 3.14  5.32     33 FALSE               14      7       0      7      1</span></span>
-<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a><span class="co">#&gt; # ℹ 8 more variables: diff_x_up &lt;dbl&gt;, diff_x_down &lt;dbl&gt;, diff_sd &lt;dbl&gt;,</span></span>
-<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a><span class="co">#&gt; #   diff_sd_up &lt;dbl&gt;, diff_sd_down &lt;dbl&gt;, diff_n &lt;dbl&gt;, diff_n_up &lt;dbl&gt;,</span></span>
-<span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a><span class="co">#&gt; #   diff_n_down &lt;dbl&gt;</span></span></code></pre></div>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a><span class="co">#&gt; # ℹ 8 more variables: diff_x_up &lt;int&gt;, diff_x_down &lt;int&gt;, diff_sd &lt;int&gt;,</span></span>
+<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a><span class="co">#&gt; #   diff_sd_up &lt;int&gt;, diff_sd_down &lt;int&gt;, diff_n &lt;int&gt;, diff_n_up &lt;int&gt;,</span></span>
+<span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a><span class="co">#&gt; #   diff_n_down &lt;int&gt;</span></span></code></pre></div>
 </div>
 <div id="visualizing-grimmer-tested-sequences" class="section level3">
 <h3>Visualizing GRIMMER-tested sequences</h3>
@@ -786,7 +739,7 @@ Francis 2021)</span>.</p>
 <span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a>out_total_n</span>
 <span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a><span class="co">#&gt; # A tibble: 48 × 9</span></span>
 <span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a><span class="co">#&gt;    x     sd        n n_change consistency both_consistent reason      case dir  </span></span>
-<span id="cb17-11"><a href="#cb17-11" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt;    &lt;dbl&gt; &lt;lgl&gt;       &lt;lgl&gt;           &lt;chr&gt;      &lt;int&gt; &lt;chr&gt;</span></span>
+<span id="cb17-11"><a href="#cb17-11" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt; &lt;chr&gt; &lt;int&gt;    &lt;int&gt; &lt;lgl&gt;       &lt;lgl&gt;           &lt;chr&gt;      &lt;int&gt; &lt;fct&gt;</span></span>
 <span id="cb17-12"><a href="#cb17-12" tabindex="-1"></a><span class="co">#&gt;  1 3.43  1.09     35        0 FALSE       FALSE           GRIMMER i…     1 forth</span></span>
 <span id="cb17-13"><a href="#cb17-13" tabindex="-1"></a><span class="co">#&gt;  2 5.28  2.12     35        0 FALSE       FALSE           GRIM inco…     1 forth</span></span>
 <span id="cb17-14"><a href="#cb17-14" tabindex="-1"></a><span class="co">#&gt;  3 3.43  1.09     34       -1 FALSE       FALSE           GRIM inco…     1 forth</span></span>
@@ -802,7 +755,7 @@ Francis 2021)</span>.</p>
 <span id="cb17-24"><a href="#cb17-24" tabindex="-1"></a><span class="fu">audit_total_n</span>(out_total_n)</span>
 <span id="cb17-25"><a href="#cb17-25" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 10</span></span>
 <span id="cb17-26"><a href="#cb17-26" tabindex="-1"></a><span class="co">#&gt;   x1    x2    sd1   sd2       n hits_total hits_forth hits_back scenarios_total</span></span>
-<span id="cb17-27"><a href="#cb17-27" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;           &lt;dbl&gt;</span></span>
+<span id="cb17-27"><a href="#cb17-27" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;int&gt;      &lt;int&gt;      &lt;int&gt;     &lt;int&gt;           &lt;int&gt;</span></span>
 <span id="cb17-28"><a href="#cb17-28" tabindex="-1"></a><span class="co">#&gt; 1 3.43  5.28  1.09  2.12     70          1          1         0              12</span></span>
 <span id="cb17-29"><a href="#cb17-29" tabindex="-1"></a><span class="co">#&gt; 2 2.97  4.42  0.43  1.65     65          1          0         1              12</span></span>
 <span id="cb17-30"><a href="#cb17-30" tabindex="-1"></a><span class="co">#&gt; # ℹ 1 more variable: hit_rate &lt;dbl&gt;</span></span></code></pre></div>

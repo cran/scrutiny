@@ -1,18 +1,14 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 
-## ----include=FALSE------------------------------------------------------------
-# Dev only: load scrutiny from within scrutiny
-devtools::load_all(".")
-
 ## ----setup, message=FALSE-----------------------------------------------------
 library(scrutiny)
 
 ## -----------------------------------------------------------------------------
-flights1 <- tribble(
+flights1 <- tibble::tribble(
   ~x,
 "8.97",
 "2.61",
@@ -25,7 +21,7 @@ flights1 <- tribble(
 
 ## -----------------------------------------------------------------------------
 flights1 <- flights1 %>% 
-  mutate(n = 28)
+  dplyr::mutate(n = 28)
 
 flights1
 
@@ -52,7 +48,7 @@ vec %>%
   decimal_places()
 
 ## -----------------------------------------------------------------------------
-iris <- as_tibble(iris)
+iris <- tibble::as_tibble(iris)
 iris %>% 
   restore_zeros_df(width = 3)
 
@@ -61,7 +57,7 @@ iris %>%
   restore_zeros_df(starts_with("Sepal"), width = 3)
 
 ## -----------------------------------------------------------------------------
-flights2 <- tribble(
+flights2 <- tibble::tribble(
   ~drone,           ~selfpilot,
   "0.09 (0.21)",    "0.19 (0.13)",
   "0.19 (0.28)",    "0.53 (0.10)",

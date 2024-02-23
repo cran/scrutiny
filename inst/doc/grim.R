@@ -1,12 +1,9 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-
-## ----include=FALSE------------------------------------------------------------
-# Dev only: load scrutiny from within scrutiny
-devtools::load_all(".")
+pkgload::load_all()
 
 ## ----setup, message=FALSE-----------------------------------------------------
 library(scrutiny)
@@ -15,7 +12,7 @@ library(scrutiny)
 grim(x = "5.27", n = 43)
 
 ## -----------------------------------------------------------------------------
-flying_pigs1 <- tribble(
+flying_pigs1 <- tibble::tribble(
   ~x,
 "8.97",
 "2.61",
@@ -25,13 +22,13 @@ flying_pigs1 <- tribble(
 "10.46",
 "7.39"
 ) %>% 
-  mutate(n = 28)
+  dplyr::mutate(n = 28)
 
-## ---- error=TRUE--------------------------------------------------------------
+## ----error=TRUE---------------------------------------------------------------
 grim_map(flying_pigs1)
 
-## ---- error=TRUE--------------------------------------------------------------
-jpap_1 <- tribble(
+## ----error=TRUE---------------------------------------------------------------
+jpap_1 <- tibble::tribble(
    ~x,
   "5.90",
   "5.71",
@@ -40,17 +37,17 @@ jpap_1 <- tribble(
   "4.61",
   "5.24",
 ) %>% 
-  mutate(n = 40)
+  dplyr::mutate(n = 40)
 
 jpap_1 %>% 
   grim_map()  # default is wrong here!
 
-## ---- error=TRUE--------------------------------------------------------------
+## ----error=TRUE---------------------------------------------------------------
 jpap_1 %>% 
   grim_map(items = 3)
 
-## ---- error=TRUE--------------------------------------------------------------
-jpap_2 <- tribble(
+## ----error=TRUE---------------------------------------------------------------
+jpap_2 <- tibble::tribble(
    ~x,    ~items,
   "6.92",  1,
   "3.48",  1,
@@ -65,7 +62,7 @@ jpap_2 %>%
   grim_map()
 
 ## -----------------------------------------------------------------------------
-jpap_3 <- tribble(
+jpap_3 <- tibble::tribble(
   ~x,     ~n,
   "32.5",  438,
   "35.6",  455,
@@ -82,28 +79,13 @@ pigs1 %>%
   dplyr::select(4:8)   # output cut down for printing
 
 ## -----------------------------------------------------------------------------
-jpap_4 <- tibble::tribble(
-    ~x,     ~n,
-    "2.02",  80,
-    "2.03",  80,
-    "2.04",  80,
-    "2.05",  80,
-)
-
-jpap_4 %>% 
-  grim_map(rounding = "up")
-
-jpap_4 %>% 
-  grim_map(rounding = "down")
-
-## -----------------------------------------------------------------------------
 flying_pigs1 %>% 
   grim_map() %>% 
   audit() %>% 
   dplyr::select(1:5)   # output cut down for printing
 
-## ---- error=TRUE, fig.width=6, fig.height=5.5---------------------------------
-jpap_5 <- tribble(
+## ----error=TRUE, fig.width=6, fig.height=5.5----------------------------------
+jpap_5 <- tibble::tribble(
   ~x,        ~n,
   "7.19",    28,
   "4.56",    34,
@@ -122,10 +104,10 @@ jpap_5 %>%
   grim_map() %>% 
   grim_plot()
 
-## ---- error=TRUE--------------------------------------------------------------
+## ----error=TRUE---------------------------------------------------------------
 grim_plot(mtcars)
 
-## ---- fig.width=6, fig.height=5.5---------------------------------------------
+## ----fig.width=6, fig.height=5.5----------------------------------------------
 jpap_5 %>% 
   grim_map(rounding = "ceiling") %>% 
   grim_plot()
@@ -141,10 +123,10 @@ audit_seq(out_seq1)
 out_seq2 <- grim_map_seq(pigs1, dispersion = 1:10)
 audit_seq(out_seq2)
 
-## ---- fig.width=6, fig.height=5.5---------------------------------------------
+## ----fig.width=6, fig.height=5.5----------------------------------------------
 grim_plot(out_seq1)
 
-## ---- fig.width=6, fig.height=5.5---------------------------------------------
+## ----fig.width=6, fig.height=5.5----------------------------------------------
 out_seq1_only_x <- grim_map_seq(pigs1, var = "x")
 out_seq1_only_n <- grim_map_seq(pigs1, var = "n")
 
@@ -152,7 +134,7 @@ grim_plot(out_seq1_only_x)
 grim_plot(out_seq1_only_n)
 
 ## -----------------------------------------------------------------------------
-df <- tibble(x1 = "4.71", x2 = "5.3", n = 40)
+df <- tibble::tibble(x1 = "4.71", x2 = "5.3", n = 40)
 
 # Detailed results:
 df_tested <- grim_map_total_n(df)
