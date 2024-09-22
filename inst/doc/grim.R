@@ -144,26 +144,22 @@ df_tested
 audit_total_n(df_tested)
 
 ## -----------------------------------------------------------------------------
-grim_ratio(x = 1.42, n = 72)
+grim_probability(x = "1.40", n = 72)
 
-grim_ratio(x = 5.93, n = 80, items = 3)
+grim_probability(x = "5.93", n = 80, items = 3)
 
 # Enter `x` as a string to preserve trailing zeros:
-grim_ratio(x = "84.20", n = 40, percent = TRUE)
-
-# Upper bounds:
-grim_ratio_upper(x = 1.42)
-grim_ratio_upper(x = "84.20", percent = TRUE)
+grim_probability(x = "84.27", n = 40, percent = TRUE)
 
 ## -----------------------------------------------------------------------------
-grim_total(x = 1.42, n = 72)
+grim_total(x = "1.40", n = 72)
 
-grim_total(x = 5.93, n = 80, items = 3)
+grim_total(x = "5.93", n = 80, items = 3)
 
-grim_total(x = "84.20", n = 40, percent = TRUE)  # Enter `x` as string to preserve trailing zero
+grim_total(x = "84.27", n = 40, percent = TRUE)  # Enter `x` as string to preserve trailing zero
 
 ## -----------------------------------------------------------------------------
-grim_ratio(x = 0.99, n = 70)
+grim_probability(x = "0.99", n = 70)
 
 ## -----------------------------------------------------------------------------
 grim_granularity(n = 80, items = 4)

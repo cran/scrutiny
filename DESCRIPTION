@@ -1,6 +1,6 @@
 Package: scrutiny
 Title: Error Detection in Science
-Version: 0.4.0
+Version: 0.5.0
 Authors@R: c(
     person(given = "Lukas",
            family = "Jung",
@@ -17,12 +17,12 @@ Description: Test published summary statistics for consistency
     Heathers and Brown, 2019, <https://osf.io/5vb3u/>).
     The package also provides infrastructure for implementing new
     error detection techniques.
-License: GPL (>= 3)
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Imports: cli, corrr, dplyr, ggplot2, ggrepel, glue, lifecycle,
-        magrittr, methods, purrr, rlang (>= 1.0.2), stats, stringr,
+        magrittr, methods, purrr, rlang (>= 1.1.0), stats, stringr,
         tibble, tidyr, tidyselect
 Collate: 'is-numeric-like.R' 'import-reexport.R' 'utils.R'
         'mapper-function-helpers.R' 'audit-cols-minimal.R' 'audit.R'
@@ -36,11 +36,11 @@ Collate: 'is-numeric-like.R' 'import-reexport.R' 'utils.R'
         'seq-predicates.R' 'function-map-seq.R' 'debit-map-seq.R'
         'disperse.R' 'function-map-total-n.R' 'debit-map-total-n.R'
         'debit-plot.R' 'duplicate-count-colpair.R' 'duplicate-count.R'
-        'grim-granularity.R' 'grim-map-debug.R' 'grim-map-seq.R'
-        'grim-map-total-n.R' 'grim-plot.R' 'grim-stats.R'
-        'grimmer-map-seq.R' 'grimmer-map-total-n.R' 'metadata.R'
-        'method-audit-seq.R' 'method-audit-total-n.R'
-        'method-debit-map.R' 'method-detect.R'
+        'grim-granularity.R' 'grim-map-debug.R' 'grim-map-seq-debug.R'
+        'grim-map-seq.R' 'grim-map-total-n.R' 'grim-plot.R'
+        'grim-stats.R' 'grimmer-map-seq.R' 'grimmer-map-total-n.R'
+        'grimmer-rsprite2.R' 'metadata.R' 'method-audit-seq.R'
+        'method-audit-total-n.R' 'method-debit-map.R' 'method-detect.R'
         'method-dup-count-colpair.R' 'method-dup-count.R'
         'method-grim-map.R' 'method-grim-sequence.R'
         'method-grimmer-map.R' 'method-tally.R' 'reround-to-fraction.R'
@@ -59,8 +59,8 @@ URL: https://lhdjung.github.io/scrutiny/,
         https://github.com/lhdjung/scrutiny/
 BugReports: https://github.com/lhdjung/scrutiny/issues
 NeedsCompilation: no
-Packaged: 2024-02-23 20:14:43 UTC; lukasjung
+Packaged: 2024-09-21 23:57:54 UTC; lukas
 Author: Lukas Jung [aut, cre],
   Aurélien Allard [ctb]
 Repository: CRAN
-Date/Publication: 2024-02-23 23:30:02 UTC
+Date/Publication: 2024-09-22 08:10:02 UTC

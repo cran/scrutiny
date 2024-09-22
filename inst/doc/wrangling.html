@@ -49,7 +49,7 @@ overflow: visible;
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -368,7 +368,7 @@ numbers as strings, and (2) restoring trailing zeros.</p>
 <div id="automated" class="section level4">
 <h4>Automated</h4>
 <p>Several R packages help to extract tables from PDF. I recommend
-tabulizer (not currently on CRAN; see <a href="https://docs.ropensci.org/tabulizer/#installation">installation
+tabulizer (not currently on CRAN; see <a href="https://stackoverflow.com/questions/70036429/having-issues-installing-tabulizer-package-in-r">installation
 notes</a>). There are also the <a href="https://expersso.r-universe.dev/pdftables#">pdftables</a> and <a href="https://ropensci.r-universe.dev/pdftools#">pdftools</a>
 packages.</p>
 <p>Using tabulizer requires Java to be installed. When it works well,
@@ -562,11 +562,11 @@ deviations):</p>
 <span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a><span class="co">#&gt; # ℹ 4 more variables: sd_incl_upper &lt;lgl&gt;, x_lower &lt;dbl&gt;, x_upper &lt;dbl&gt;,</span></span>
 <span id="cb11-17"><a href="#cb11-17" tabindex="-1"></a><span class="co">#&gt; #   .origin &lt;chr&gt;</span></span></code></pre></div>
 <p>If your strings look like <code>&quot;2.65 [0.27]&quot;</code>, specify the
-<code>.sep</code> argument as <code>&quot;brackets&quot;</code>. Likewise for
-<code>&quot;2.65 {0.27}&quot;</code> and <code>.sep = &quot;braces&quot;</code>. What about
+<code>sep</code> argument as <code>&quot;brackets&quot;</code>. Likewise for
+<code>&quot;2.65 {0.27}&quot;</code> and <code>sep = &quot;braces&quot;</code>. What about
 other separators, as in <code>&quot;2.65 &lt;0.27&gt;&quot;</code>? Specify
-<code>.sep</code> as those two substrings, like
-<code>.sep = c(&quot;&lt;&quot;, &quot;&gt;&quot;)</code>. In all of these cases, the output
+<code>sep</code> as those two substrings, like
+<code>sep = c(&quot;&lt;&quot;, &quot;&gt;&quot;)</code>. In all of these cases, the output
 will be the same as the default would be if the strings were like
 <code>&quot;2.65 (0.27)&quot;</code>.</p>
 </div>
@@ -576,7 +576,7 @@ will be the same as the default would be if the strings were like
 the part before the parentheses and (2) <code>&quot;sd&quot;</code> for the part
 inside of them. However, this won’t fit for all data presented like
 <code>5.22 (0.73)</code>. Override the defaults by specifying
-<code>.col1</code> and/or <code>.col2</code>:</p>
+<code>col1</code> and/or <code>col2</code>:</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>flights2 <span class="sc">%&gt;%</span> </span>
 <span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>  <span class="fu">split_by_parens</span>(<span class="at">end1 =</span> <span class="st">&quot;beta&quot;</span>, <span class="at">end2 =</span> <span class="st">&quot;se&quot;</span>)</span>
 <span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co">#&gt; # A tibble: 4 × 4</span></span>
@@ -586,7 +586,7 @@ inside of them. However, this won’t fit for all data presented like
 <span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a><span class="co">#&gt; 2 0.19       0.28     0.53           0.10        </span></span>
 <span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="co">#&gt; 3 0.62       0.16     0.50           0.11        </span></span>
 <span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a><span class="co">#&gt; 4 0.15       0.35     0.57           0.16</span></span></code></pre></div>
-<p>These suffixes become column names if <code>.transform</code> is set
+<p>These suffixes become column names if <code>transform</code> is set
 to <code>TRUE</code>:</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>flights2 <span class="sc">%&gt;%</span> </span>
 <span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>  <span class="fu">split_by_parens</span>(<span class="at">end1 =</span> <span class="st">&quot;beta&quot;</span>, <span class="at">end2 =</span> <span class="st">&quot;se&quot;</span>, <span class="at">transform =</span> <span class="cn">TRUE</span>)</span>
