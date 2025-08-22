@@ -137,14 +137,14 @@ check_factory_key_args_names <- function(key_cols_missing,
 #'
 #' @return No return value; might throw an error.
 #'
-#' @noRd
+#' @export
 check_factory_dots <- function(fun, fun_name_scalar, ...) {
   dots <- rlang::enexprs(...)
   dots_names <- names(dots)
   offenders <- dots_names[!dots_names %in% names(formals(fun))]
   if (length(offenders) > 0L) {
     fun_name_mapper <- name_caller_call(n = 2L)
-    offenders <- wrap_in_backticks(offenders)
+    offenders <- paste0("`", offenders, "`")
     if (length(offenders) == 1L) {
       msg_arg <- "argument"
       msg_it_they <- "It's not an"
@@ -242,12 +242,17 @@ insert_key_args <- function(fun, reported, insert_after = 1L) {
 #' @param key_cols_call User-provided arguments named after one or more key
 #'   columns.
 #'
+#' @export
+#'
 #' @return Data frame `data`, possibly with one or more columns renamed.
 #'   Remember reassigning the value to `data`!
 #'
-#' @noRd
+#' @examples
+#' # Not really a meaningful example -- need to use
+#' # the function in very specific places
+#' data <- grim_map(pigs1)
+#' data <- absorb_key_args(data, c("x", "n"))
 absorb_key_args <- function(data, reported, key_cols_call) {
-
   key_cols_missing <- reported[!reported %in% colnames(data)]
   key_cols_missing <- as.character(key_cols_missing)
 
@@ -292,7 +297,6 @@ absorb_key_args <- function(data, reported, key_cols_call) {
 }
 
 
-
 #' Check that disabled arguments are not specified
 #'
 #' If the user of the function factory specified its `.args_disabled` argument,
@@ -312,7 +316,11 @@ absorb_key_args <- function(data, reported, key_cols_call) {
 #'
 #' @return No return value; might throw an error.
 #'
-#' @noRd
+#' @export
+#'
+#' @examples
+#' check_args_disabled(c("disabled1", "disabled2"))
+
 check_args_disabled <- function(args_disabled) {
   if (is.null(args_disabled)) {
     return(NULL)

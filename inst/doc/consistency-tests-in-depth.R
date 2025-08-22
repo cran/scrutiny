@@ -44,13 +44,15 @@ df2
 schlim_map(df2, y = foo, n = bar)
 
 ## ----error=TRUE---------------------------------------------------------------
+try({
 schlim_map(df2, y = foo)
 
 # With a wrong identification:
 schlim_map(df2, n = mike)
+})
 
 ## ----eval=FALSE, include=FALSE------------------------------------------------
-#  # NOTE: The two diagrams below should have width 585 and a locked aspect ratio.
+# # NOTE: The two diagrams below should have width 585 and a locked aspect ratio.
 
 ## ----include=FALSE------------------------------------------------------------
 # Just internally, so that the function source code below works:
@@ -84,10 +86,10 @@ schlim_map_alt1(df1)
 schlim_map_alt2(df1)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  add_class <- function(x, new_class) {
-#    class(x) <- c(new_class, class(x))
-#    x
-#  }
+# add_class <- function(x, new_class) {
+#   class(x) <- c(new_class, class(x))
+#   x
+# }
 
 ## -----------------------------------------------------------------------------
 some_object <- tibble::tibble(x = 5)
@@ -99,6 +101,7 @@ df1_tested <- schlim_map(df1)
 class(df1_tested)
 
 ## ----error=TRUE---------------------------------------------------------------
+try({
 # The `name_test` argument is only for the alert
 # that might be issued by `check_audit_special()`:
 audit.scr_schlim_map <- function(data) {
@@ -110,6 +113,7 @@ audit(df1_tested)
 
 # This doesn't work because no method was defined:
 audit(iris)
+})
 
 ## -----------------------------------------------------------------------------
 audit_grim    <- audit(grim_map(pigs1))
@@ -120,23 +124,23 @@ write_doc_audit(sample_output = audit_grim,  name_test = "GRIM")
 write_doc_audit(sample_output = audit_grimmer, name_test = "GRIMMER")
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  grim_map_seq <- function_map_seq(
-#    .fun = grim_map,
-#    .reported = c("x", "n"),
-#    .name_test = "GRIM",
-#  )
-#  
-#  grimmer_map_seq <- function_map_seq(
-#    .fun = grimmer_map,
-#    .reported = c("x", "sd", "n"),
-#    .name_test = "GRIMMER"
-#  )
-#  
-#  debit_map_seq <- function_map_seq(
-#    .fun = debit_map,
-#    .reported = c("x", "sd", "n"),
-#    .name_test = "DEBIT",
-#  )
+# grim_map_seq <- function_map_seq(
+#   .fun = grim_map,
+#   .reported = c("x", "n"),
+#   .name_test = "GRIM",
+# )
+# 
+# grimmer_map_seq <- function_map_seq(
+#   .fun = grimmer_map,
+#   .reported = c("x", "sd", "n"),
+#   .name_test = "GRIMMER"
+# )
+# 
+# debit_map_seq <- function_map_seq(
+#   .fun = debit_map,
+#   .reported = c("x", "sd", "n"),
+#   .name_test = "DEBIT",
+# )
 
 ## -----------------------------------------------------------------------------
 schlim_map_seq <- function_map_seq(
@@ -161,23 +165,23 @@ df1 %>%
 df1
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  grim_map_total_n <- function_map_total_n(
-#    .fun = grim_map,
-#    .reported = "x",  # don't include `n` here
-#    .name_test = "GRIM"
-#  )
-#  
-#  grimmer_map_total_n <- function_map_total_n(
-#    .fun = grimmer_map,
-#    .reported = c("x", "sd"),  # don't include `n` here
-#    .name_test = "GRIMMER"
-#  )
-#  
-#  debit_map_total_n <- function_map_total_n(
-#    .fun = debit_map,
-#    .reported = c("x", "sd"),  # don't include `n` here
-#    .name_test = "DEBIT"
-#  )
+# grim_map_total_n <- function_map_total_n(
+#   .fun = grim_map,
+#   .reported = "x",  # don't include `n` here
+#   .name_test = "GRIM"
+# )
+# 
+# grimmer_map_total_n <- function_map_total_n(
+#   .fun = grimmer_map,
+#   .reported = c("x", "sd"),  # don't include `n` here
+#   .name_test = "GRIMMER"
+# )
+# 
+# debit_map_total_n <- function_map_total_n(
+#   .fun = debit_map,
+#   .reported = c("x", "sd"),  # don't include `n` here
+#   .name_test = "DEBIT"
+# )
 
 ## -----------------------------------------------------------------------------
 schlim_map_total_n <- function_map_total_n(
@@ -201,15 +205,15 @@ out_total_n
 audit_total_n(out_total_n)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  write_doc_audit_seq(key_args = c("x", "n"), name_test = "GRIM")
-#  write_doc_audit_seq(key_args = c("x", "sd", "n"), name_test = "GRIMMER")
-#  write_doc_audit_seq(key_args = c("x", "sd", "n"), name_test = "DEBIT")
+# write_doc_audit_seq(key_args = c("x", "n"), name_test = "GRIM")
+# write_doc_audit_seq(key_args = c("x", "sd", "n"), name_test = "GRIMMER")
+# write_doc_audit_seq(key_args = c("x", "sd", "n"), name_test = "DEBIT")
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  write_doc_audit_total_n(key_args = c("x", "n"), name_test = "GRIM")
-#  write_doc_audit_total_n(key_args = c("x", "sd", "n"), name_test = "GRIMMER")
-#  write_doc_audit_total_n(key_args = c("x", "sd", "n"), name_test = "DEBIT")
+# write_doc_audit_total_n(key_args = c("x", "n"), name_test = "GRIM")
+# write_doc_audit_total_n(key_args = c("x", "sd", "n"), name_test = "GRIMMER")
+# write_doc_audit_total_n(key_args = c("x", "sd", "n"), name_test = "DEBIT")
 
 ## ----include=FALSE, eval=FALSE------------------------------------------------
-#  # Note: The diagram was made on diagrams.net. The bold margins were created as follows: (1) selecting the respective field, (2) clicking on the `View` symbol at the upper left, (3) selecting `Format Panel`, and (4) setting the line thickness from 1 to 3 pt.
+# # Note: The diagram was made on diagrams.net. The bold margins were created as follows: (1) selecting the respective field, (2) clicking on the `View` symbol at the upper left, (3) selecting `Format Panel`, and (4) setting the line thickness from 1 to 3 pt.
 

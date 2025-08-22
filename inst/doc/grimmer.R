@@ -24,9 +24,12 @@ flying_pigs1 <- tibble::tribble(
 )
 
 ## ----error=TRUE---------------------------------------------------------------
+try({
 grimmer_map(flying_pigs1)
+})
 
 ## ----error=TRUE---------------------------------------------------------------
+try({
 flying_pigs2 <- tibble::tribble(
    ~x,    ~sd,    ~n,
   "5.90", "2.19",  40,
@@ -39,12 +42,16 @@ flying_pigs2 <- tibble::tribble(
 
 flying_pigs2 %>% 
   grimmer_map()  # default is wrong here!
+})
 
 ## ----error=TRUE---------------------------------------------------------------
+try({
 flying_pigs2 %>% 
   grimmer_map(items = 3)
+})
 
 ## ----error=TRUE---------------------------------------------------------------
+try({
 flying_pigs3 <- tibble::tribble(
    ~x,     ~sd,    ~n,  ~items,
   "6.92",  "2.19",  30,  1,
@@ -57,6 +64,7 @@ flying_pigs3 <- tibble::tribble(
 
 flying_pigs3 %>% 
   grimmer_map()
+})
 
 ## -----------------------------------------------------------------------------
 flying_pigs3 %>%
@@ -89,7 +97,9 @@ flying_pigs4 %>%
   grim_plot()
 
 ## ----error=TRUE---------------------------------------------------------------
+try({
 grim_plot(mtcars)
+})
 
 ## -----------------------------------------------------------------------------
 out_seq1 <- grimmer_map_seq(pigs5)

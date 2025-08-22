@@ -1,3 +1,26 @@
+# scrutiny 0.6.0
+
+## Bugfixes
+
+-   Fixed a bug in the DEBIT functions that could sometimes have resulted in `consistency` being `FALSE` when it should have been `TRUE` (thanks to \@nrposner, #75). However, this seems to be a rare issue, and DEBIT is not widely used in any case.
+
+-   Fixed a bug that could theoretically lead `grim()`, `grim_map()`, `grim_map_seq()`, and `grim_map_total_n()` to throw a warning and possibly even return incorrect results (also \@nrposner, #75). However, this is even less realistic than the previous bug.
+
+-   Compatibility with ggplot2 4.0.0 was ensured (@teunbrand, #78).
+
+-   `restore_zeros()` now checks `width` more strictly:
+
+    -   It no longer truncates decimal numbers if `width` is specified but some elements of `x` have more decimal places than that. For example, in earlier versions, `restore_zeros(c(0.12, 0.123, 0.1234), width = 2)` would have returned `c("0.120", "0.123", "0.123")`: it silently cut off the `4` from the last value. An error is now thrown in such cases.
+    -   Also, `width` is now checked to be either a single whole number or a vector of whole numbers with the same length as `x`.
+
+-   `restore_zeros_df()` has the same fixes as above.
+
+-   `is_seq_dispersed()` now works correctly if `NA` values are present.
+
+## Lifecycle updates
+
+Currently none. However, the next major or minor version will introduce breaking changes, removals (as announced in scrutiny 0.5.0 below), and possibly more deprecations.
+
 # scrutiny 0.5.0
 
 The package is now released under the MIT license.

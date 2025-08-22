@@ -25,9 +25,12 @@ flying_pigs1 <- tibble::tribble(
   dplyr::mutate(n = 28)
 
 ## ----error=TRUE---------------------------------------------------------------
+try({
 grim_map(flying_pigs1)
+})
 
 ## ----error=TRUE---------------------------------------------------------------
+try({
 jpap_1 <- tibble::tribble(
    ~x,
   "5.90",
@@ -41,12 +44,16 @@ jpap_1 <- tibble::tribble(
 
 jpap_1 %>% 
   grim_map()  # default is wrong here!
+})
 
 ## ----error=TRUE---------------------------------------------------------------
+try({
 jpap_1 %>% 
   grim_map(items = 3)
+})
 
 ## ----error=TRUE---------------------------------------------------------------
+try({
 jpap_2 <- tibble::tribble(
    ~x,    ~items,
   "6.92",  1,
@@ -60,6 +67,7 @@ jpap_2 <- tibble::tribble(
 
 jpap_2 %>% 
   grim_map()
+})
 
 ## -----------------------------------------------------------------------------
 jpap_3 <- tibble::tribble(
@@ -85,6 +93,7 @@ flying_pigs1 %>%
   dplyr::select(1:5)   # output cut down for printing
 
 ## ----error=TRUE, fig.width=6, fig.height=5.5----------------------------------
+try({
 jpap_5 <- tibble::tribble(
   ~x,        ~n,
   "7.19",    28,
@@ -103,9 +112,12 @@ jpap_5 <- tibble::tribble(
 jpap_5 %>% 
   grim_map() %>% 
   grim_plot()
+})
 
 ## ----error=TRUE---------------------------------------------------------------
+try({
 grim_plot(mtcars)
+})
 
 ## ----fig.width=6, fig.height=5.5----------------------------------------------
 jpap_5 %>% 
@@ -162,7 +174,7 @@ grim_total(x = "84.27", n = 40, percent = TRUE)  # Enter `x` as string to preser
 grim_probability(x = "0.99", n = 70)
 
 ## -----------------------------------------------------------------------------
-grim_granularity(n = 80, items = 4)
+grim_granularity(n = 80, items = 5)
 
 ## -----------------------------------------------------------------------------
 grim_items(n = 50, gran = 0.01)

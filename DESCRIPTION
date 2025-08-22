@@ -1,6 +1,6 @@
 Package: scrutiny
 Title: Error Detection in Science
-Version: 0.5.0
+Version: 0.6.0
 Authors@R: c(
     person(given = "Lukas",
            family = "Jung",
@@ -8,6 +8,9 @@ Authors@R: c(
            email = "jung-lukas@gmx.net"),
     person(given = "Aurélien",
            family = "Allard",
+           role = c("ctb")),
+    person(given = "Nicolas Roman",
+           family = "Posner",
            role = c("ctb"))
   )
 Maintainer: Lukas Jung <jung-lukas@gmx.net>
@@ -43,14 +46,14 @@ Collate: 'is-numeric-like.R' 'import-reexport.R' 'utils.R'
         'method-audit-total-n.R' 'method-debit-map.R' 'method-detect.R'
         'method-dup-count-colpair.R' 'method-dup-count.R'
         'method-grim-map.R' 'method-grim-sequence.R'
-        'method-grimmer-map.R' 'method-tally.R' 'reround-to-fraction.R'
-        'reverse-map-seq.R' 'reverse-map-total-n.R'
-        'rivets-perfect-mean-sd.R' 'rivets-plot-cols.R'
-        'rivets-plot-lines.R' 'rivets-t-test.R' 'rivets_new.R'
-        'rounding-bias.R' 'row-to-colnames.R' 'scrutiny-package.R'
-        'seq-disperse.R' 'seq-length.R' 'split-by-parens.R'
-        'subset-superset.R' 'utils-pipe.R' 'utils-tidy-eval.R'
-        'write-doc-audit.R'
+        'method-grimmer-map.R' 'method-tally.R' 'odds-ratio-map.R'
+        'reround-to-fraction.R' 'reverse-map-seq.R'
+        'reverse-map-total-n.R' 'rivets-perfect-mean-sd.R'
+        'rivets-plot-cols.R' 'rivets-plot-lines.R' 'rivets-t-test.R'
+        'rivets_new.R' 'rounding-bias.R' 'row-to-colnames.R'
+        'scrutiny-package.R' 'seq-disperse.R' 'seq-length.R'
+        'split-by-parens.R' 'subset-superset.R' 'utils-pipe.R'
+        'utils-tidy-eval.R' 'write-doc-audit.R'
 Suggests: knitr, pkgload, rmarkdown, testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Depends: R (>= 3.4.0)
@@ -59,8 +62,9 @@ URL: https://lhdjung.github.io/scrutiny/,
         https://github.com/lhdjung/scrutiny/
 BugReports: https://github.com/lhdjung/scrutiny/issues
 NeedsCompilation: no
-Packaged: 2024-09-21 23:57:54 UTC; lukas
+Packaged: 2025-08-22 17:47:57 UTC; lukas
 Author: Lukas Jung [aut, cre],
-  Aurélien Allard [ctb]
+  Aurélien Allard [ctb],
+  Nicolas Roman Posner [ctb]
 Repository: CRAN
-Date/Publication: 2024-09-22 08:10:02 UTC
+Date/Publication: 2025-08-22 18:10:02 UTC
