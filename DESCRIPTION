@@ -1,6 +1,6 @@
 Package: scrutiny
 Title: Error Detection in Science
-Version: 0.6.0
+Version: 0.6.1
 Authors@R: c(
     person(given = "Lukas",
            family = "Jung",
@@ -23,7 +23,7 @@ Description: Test published summary statistics for consistency
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Imports: cli, corrr, dplyr, ggplot2, ggrepel, glue, lifecycle,
         magrittr, methods, purrr, rlang (>= 1.1.0), stats, stringr,
         tibble, tidyr, tidyselect
@@ -62,9 +62,9 @@ URL: https://lhdjung.github.io/scrutiny/,
         https://github.com/lhdjung/scrutiny/
 BugReports: https://github.com/lhdjung/scrutiny/issues
 NeedsCompilation: no
-Packaged: 2025-08-22 17:47:57 UTC; lukas
+Packaged: 2025-12-02 14:03:31 UTC; lj25e410
 Author: Lukas Jung [aut, cre],
   Aurélien Allard [ctb],
   Nicolas Roman Posner [ctb]
 Repository: CRAN
-Date/Publication: 2025-08-22 18:10:02 UTC
+Date/Publication: 2025-12-02 14:30:02 UTC

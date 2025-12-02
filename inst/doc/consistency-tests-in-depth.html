@@ -48,8 +48,9 @@ overflow: visible;
 }
 </style>
 <style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -60,7 +61,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -902,7 +903,7 @@ source code into your own source code. (That’s why I left out the
 parentheses — return the function itself.) Never rely on calling a
 function with <code>:::</code>, because these internals are not actually
 meant for users. They can easily shift and vanish without notice.</p>
-<p>If you develop your own package, see <a href="https://www.tidyverse.org/blog/2022/09/playing-on-the-same-team-as-your-dependecy/">this
+<p>If you develop your own package, see <a href="https://tidyverse.org/blog/2022/09/playing-on-the-same-team-as-your-dependecy/">this
 blogpost</a> by Thomas Lin Pedersen for more information on using
 internal code from other packages. In particular, package developers
 should mind licenses when copying code from scrutiny because scrutiny is
@@ -995,34 +996,118 @@ called <em>Summaries with <code>audit()</code></em>. Create it with
 <code>write_doc_audit()</code>:</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>audit_grim    <span class="ot">&lt;-</span> <span class="fu">audit</span>(<span class="fu">grim_map</span>(pigs1))</span>
 <span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>audit_grimmer <span class="ot">&lt;-</span> <span class="fu">audit</span>(<span class="fu">grimmer_map</span>(pigs5))</span>
-<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a></span>
-<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="fu">write_doc_audit</span>(<span class="at">sample_output =</span> audit_grim,  <span class="at">name_test =</span> <span class="st">&quot;GRIM&quot;</span>)</span>
-<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a><span class="co">#&gt; #&#39; @section Summaries with `audit()`: There is an S3 method for `audit()`, so </span></span>
-<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a><span class="co">#&gt; #&#39;   you can call `audit()` following `grim_map()` to get a summary of </span></span>
-<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a><span class="co">#&gt; #&#39;   `grim_map()`&#39;s results. It is a tibble with a single row and these </span></span>
-<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a><span class="co">#&gt; #&#39;   columns -- </span></span>
-<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a><span class="co">#&gt; #&#39; </span></span>
-<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a><span class="co">#&gt; #&#39; 1. `incons_cases`: number of GRIM-inconsistent value sets.</span></span>
-<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a><span class="co">#&gt; #&#39; 2. `all_cases`: total number of value sets.</span></span>
-<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a><span class="co">#&gt; #&#39; 3. `incons_rate`: proportion of GRIM-inconsistent value sets.</span></span>
-<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a><span class="co">#&gt; #&#39; 4. `mean_grim_prob`: </span></span>
-<span id="cb15-14"><a href="#cb15-14" tabindex="-1"></a><span class="co">#&gt; #&#39; 5. `incons_to_prob`: </span></span>
-<span id="cb15-15"><a href="#cb15-15" tabindex="-1"></a><span class="co">#&gt; #&#39; 6. `testable_cases`: </span></span>
-<span id="cb15-16"><a href="#cb15-16" tabindex="-1"></a><span class="co">#&gt; #&#39; 7. `testable_rate`:</span></span>
-<span id="cb15-17"><a href="#cb15-17" tabindex="-1"></a></span>
-<span id="cb15-18"><a href="#cb15-18" tabindex="-1"></a><span class="fu">write_doc_audit</span>(<span class="at">sample_output =</span> audit_grimmer, <span class="at">name_test =</span> <span class="st">&quot;GRIMMER&quot;</span>)</span>
-<span id="cb15-19"><a href="#cb15-19" tabindex="-1"></a><span class="co">#&gt; #&#39; @section Summaries with `audit()`: There is an S3 method for `audit()`, so </span></span>
-<span id="cb15-20"><a href="#cb15-20" tabindex="-1"></a><span class="co">#&gt; #&#39;   you can call `audit()` following `grimmer_map()` to get a summary of </span></span>
-<span id="cb15-21"><a href="#cb15-21" tabindex="-1"></a><span class="co">#&gt; #&#39;   `grimmer_map()`&#39;s results. It is a tibble with a single row and these </span></span>
-<span id="cb15-22"><a href="#cb15-22" tabindex="-1"></a><span class="co">#&gt; #&#39;   columns -- </span></span>
-<span id="cb15-23"><a href="#cb15-23" tabindex="-1"></a><span class="co">#&gt; #&#39; </span></span>
-<span id="cb15-24"><a href="#cb15-24" tabindex="-1"></a><span class="co">#&gt; #&#39; 1. `incons_cases`: number of GRIMMER-inconsistent value sets.</span></span>
-<span id="cb15-25"><a href="#cb15-25" tabindex="-1"></a><span class="co">#&gt; #&#39; 2. `all_cases`: total number of value sets.</span></span>
-<span id="cb15-26"><a href="#cb15-26" tabindex="-1"></a><span class="co">#&gt; #&#39; 3. `incons_rate`: proportion of GRIMMER-inconsistent value sets.</span></span>
-<span id="cb15-27"><a href="#cb15-27" tabindex="-1"></a><span class="co">#&gt; #&#39; 4. `fail_grim`: </span></span>
-<span id="cb15-28"><a href="#cb15-28" tabindex="-1"></a><span class="co">#&gt; #&#39; 5. `fail_test1`: </span></span>
-<span id="cb15-29"><a href="#cb15-29" tabindex="-1"></a><span class="co">#&gt; #&#39; 6. `fail_test2`: </span></span>
-<span id="cb15-30"><a href="#cb15-30" tabindex="-1"></a><span class="co">#&gt; #&#39; 7. `fail_test3`:</span></span></code></pre></div>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="co">#&gt; Warning: False-positive GRIMMER results possible.</span></span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="co">#&gt; ! I became aware of a bug in the `grimmer*()` functions.</span></span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a><span class="co">#&gt; ✖ GRIMMER&#39;s test 3 can flag consistent values as inconsistent.</span></span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a><span class="co">#&gt; ✖ For now, please use `show_reason = TRUE` and interpret results of test 3 with</span></span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a><span class="co">#&gt;   care. (The first two tests and GRIM are not affected.)</span></span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a><span class="co">#&gt; ℹ The next version of scrutiny will provide a fix. Many apologies.</span></span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a><span class="co">#&gt; ℹ For more information, see &lt;https://github.com/lhdjung/scrutiny/issues/80&gt;</span></span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a><span class="co">#&gt; False-positive GRIMMER results possible.</span></span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a><span class="co">#&gt; ! I became aware of a bug in the `grimmer*()` functions.</span></span>
+<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a><span class="co">#&gt; ✖ GRIMMER&#39;s test 3 can flag consistent values as inconsistent.</span></span>
+<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a><span class="co">#&gt; ✖ For now, please use `show_reason = TRUE` and interpret results of test 3 with</span></span>
+<span id="cb15-14"><a href="#cb15-14" tabindex="-1"></a><span class="co">#&gt;   care. (The first two tests and GRIM are not affected.)</span></span>
+<span id="cb15-15"><a href="#cb15-15" tabindex="-1"></a><span class="co">#&gt; ℹ The next version of scrutiny will provide a fix. Many apologies.</span></span>
+<span id="cb15-16"><a href="#cb15-16" tabindex="-1"></a><span class="co">#&gt; ℹ For more information, see &lt;https://github.com/lhdjung/scrutiny/issues/80&gt;</span></span>
+<span id="cb15-17"><a href="#cb15-17" tabindex="-1"></a><span class="co">#&gt; False-positive GRIMMER results possible.</span></span>
+<span id="cb15-18"><a href="#cb15-18" tabindex="-1"></a><span class="co">#&gt; ! I became aware of a bug in the `grimmer*()` functions.</span></span>
+<span id="cb15-19"><a href="#cb15-19" tabindex="-1"></a><span class="co">#&gt; ✖ GRIMMER&#39;s test 3 can flag consistent values as inconsistent.</span></span>
+<span id="cb15-20"><a href="#cb15-20" tabindex="-1"></a><span class="co">#&gt; ✖ For now, please use `show_reason = TRUE` and interpret results of test 3 with</span></span>
+<span id="cb15-21"><a href="#cb15-21" tabindex="-1"></a><span class="co">#&gt;   care. (The first two tests and GRIM are not affected.)</span></span>
+<span id="cb15-22"><a href="#cb15-22" tabindex="-1"></a><span class="co">#&gt; ℹ The next version of scrutiny will provide a fix. Many apologies.</span></span>
+<span id="cb15-23"><a href="#cb15-23" tabindex="-1"></a><span class="co">#&gt; ℹ For more information, see &lt;https://github.com/lhdjung/scrutiny/issues/80&gt;</span></span>
+<span id="cb15-24"><a href="#cb15-24" tabindex="-1"></a><span class="co">#&gt; False-positive GRIMMER results possible.</span></span>
+<span id="cb15-25"><a href="#cb15-25" tabindex="-1"></a><span class="co">#&gt; ! I became aware of a bug in the `grimmer*()` functions.</span></span>
+<span id="cb15-26"><a href="#cb15-26" tabindex="-1"></a><span class="co">#&gt; ✖ GRIMMER&#39;s test 3 can flag consistent values as inconsistent.</span></span>
+<span id="cb15-27"><a href="#cb15-27" tabindex="-1"></a><span class="co">#&gt; ✖ For now, please use `show_reason = TRUE` and interpret results of test 3 with</span></span>
+<span id="cb15-28"><a href="#cb15-28" tabindex="-1"></a><span class="co">#&gt;   care. (The first two tests and GRIM are not affected.)</span></span>
+<span id="cb15-29"><a href="#cb15-29" tabindex="-1"></a><span class="co">#&gt; ℹ The next version of scrutiny will provide a fix. Many apologies.</span></span>
+<span id="cb15-30"><a href="#cb15-30" tabindex="-1"></a><span class="co">#&gt; ℹ For more information, see &lt;https://github.com/lhdjung/scrutiny/issues/80&gt;</span></span>
+<span id="cb15-31"><a href="#cb15-31" tabindex="-1"></a><span class="co">#&gt; False-positive GRIMMER results possible.</span></span>
+<span id="cb15-32"><a href="#cb15-32" tabindex="-1"></a><span class="co">#&gt; ! I became aware of a bug in the `grimmer*()` functions.</span></span>
+<span id="cb15-33"><a href="#cb15-33" tabindex="-1"></a><span class="co">#&gt; ✖ GRIMMER&#39;s test 3 can flag consistent values as inconsistent.</span></span>
+<span id="cb15-34"><a href="#cb15-34" tabindex="-1"></a><span class="co">#&gt; ✖ For now, please use `show_reason = TRUE` and interpret results of test 3 with</span></span>
+<span id="cb15-35"><a href="#cb15-35" tabindex="-1"></a><span class="co">#&gt;   care. (The first two tests and GRIM are not affected.)</span></span>
+<span id="cb15-36"><a href="#cb15-36" tabindex="-1"></a><span class="co">#&gt; ℹ The next version of scrutiny will provide a fix. Many apologies.</span></span>
+<span id="cb15-37"><a href="#cb15-37" tabindex="-1"></a><span class="co">#&gt; ℹ For more information, see &lt;https://github.com/lhdjung/scrutiny/issues/80&gt;</span></span>
+<span id="cb15-38"><a href="#cb15-38" tabindex="-1"></a><span class="co">#&gt; False-positive GRIMMER results possible.</span></span>
+<span id="cb15-39"><a href="#cb15-39" tabindex="-1"></a><span class="co">#&gt; ! I became aware of a bug in the `grimmer*()` functions.</span></span>
+<span id="cb15-40"><a href="#cb15-40" tabindex="-1"></a><span class="co">#&gt; ✖ GRIMMER&#39;s test 3 can flag consistent values as inconsistent.</span></span>
+<span id="cb15-41"><a href="#cb15-41" tabindex="-1"></a><span class="co">#&gt; ✖ For now, please use `show_reason = TRUE` and interpret results of test 3 with</span></span>
+<span id="cb15-42"><a href="#cb15-42" tabindex="-1"></a><span class="co">#&gt;   care. (The first two tests and GRIM are not affected.)</span></span>
+<span id="cb15-43"><a href="#cb15-43" tabindex="-1"></a><span class="co">#&gt; ℹ The next version of scrutiny will provide a fix. Many apologies.</span></span>
+<span id="cb15-44"><a href="#cb15-44" tabindex="-1"></a><span class="co">#&gt; ℹ For more information, see &lt;https://github.com/lhdjung/scrutiny/issues/80&gt;</span></span>
+<span id="cb15-45"><a href="#cb15-45" tabindex="-1"></a><span class="co">#&gt; False-positive GRIMMER results possible.</span></span>
+<span id="cb15-46"><a href="#cb15-46" tabindex="-1"></a><span class="co">#&gt; ! I became aware of a bug in the `grimmer*()` functions.</span></span>
+<span id="cb15-47"><a href="#cb15-47" tabindex="-1"></a><span class="co">#&gt; ✖ GRIMMER&#39;s test 3 can flag consistent values as inconsistent.</span></span>
+<span id="cb15-48"><a href="#cb15-48" tabindex="-1"></a><span class="co">#&gt; ✖ For now, please use `show_reason = TRUE` and interpret results of test 3 with</span></span>
+<span id="cb15-49"><a href="#cb15-49" tabindex="-1"></a><span class="co">#&gt;   care. (The first two tests and GRIM are not affected.)</span></span>
+<span id="cb15-50"><a href="#cb15-50" tabindex="-1"></a><span class="co">#&gt; ℹ The next version of scrutiny will provide a fix. Many apologies.</span></span>
+<span id="cb15-51"><a href="#cb15-51" tabindex="-1"></a><span class="co">#&gt; ℹ For more information, see &lt;https://github.com/lhdjung/scrutiny/issues/80&gt;</span></span>
+<span id="cb15-52"><a href="#cb15-52" tabindex="-1"></a><span class="co">#&gt; False-positive GRIMMER results possible.</span></span>
+<span id="cb15-53"><a href="#cb15-53" tabindex="-1"></a><span class="co">#&gt; ! I became aware of a bug in the `grimmer*()` functions.</span></span>
+<span id="cb15-54"><a href="#cb15-54" tabindex="-1"></a><span class="co">#&gt; ✖ GRIMMER&#39;s test 3 can flag consistent values as inconsistent.</span></span>
+<span id="cb15-55"><a href="#cb15-55" tabindex="-1"></a><span class="co">#&gt; ✖ For now, please use `show_reason = TRUE` and interpret results of test 3 with</span></span>
+<span id="cb15-56"><a href="#cb15-56" tabindex="-1"></a><span class="co">#&gt;   care. (The first two tests and GRIM are not affected.)</span></span>
+<span id="cb15-57"><a href="#cb15-57" tabindex="-1"></a><span class="co">#&gt; ℹ The next version of scrutiny will provide a fix. Many apologies.</span></span>
+<span id="cb15-58"><a href="#cb15-58" tabindex="-1"></a><span class="co">#&gt; ℹ For more information, see &lt;https://github.com/lhdjung/scrutiny/issues/80&gt;</span></span>
+<span id="cb15-59"><a href="#cb15-59" tabindex="-1"></a><span class="co">#&gt; False-positive GRIMMER results possible.</span></span>
+<span id="cb15-60"><a href="#cb15-60" tabindex="-1"></a><span class="co">#&gt; ! I became aware of a bug in the `grimmer*()` functions.</span></span>
+<span id="cb15-61"><a href="#cb15-61" tabindex="-1"></a><span class="co">#&gt; ✖ GRIMMER&#39;s test 3 can flag consistent values as inconsistent.</span></span>
+<span id="cb15-62"><a href="#cb15-62" tabindex="-1"></a><span class="co">#&gt; ✖ For now, please use `show_reason = TRUE` and interpret results of test 3 with</span></span>
+<span id="cb15-63"><a href="#cb15-63" tabindex="-1"></a><span class="co">#&gt;   care. (The first two tests and GRIM are not affected.)</span></span>
+<span id="cb15-64"><a href="#cb15-64" tabindex="-1"></a><span class="co">#&gt; ℹ The next version of scrutiny will provide a fix. Many apologies.</span></span>
+<span id="cb15-65"><a href="#cb15-65" tabindex="-1"></a><span class="co">#&gt; ℹ For more information, see &lt;https://github.com/lhdjung/scrutiny/issues/80&gt;</span></span>
+<span id="cb15-66"><a href="#cb15-66" tabindex="-1"></a><span class="co">#&gt; False-positive GRIMMER results possible.</span></span>
+<span id="cb15-67"><a href="#cb15-67" tabindex="-1"></a><span class="co">#&gt; ! I became aware of a bug in the `grimmer*()` functions.</span></span>
+<span id="cb15-68"><a href="#cb15-68" tabindex="-1"></a><span class="co">#&gt; ✖ GRIMMER&#39;s test 3 can flag consistent values as inconsistent.</span></span>
+<span id="cb15-69"><a href="#cb15-69" tabindex="-1"></a><span class="co">#&gt; ✖ For now, please use `show_reason = TRUE` and interpret results of test 3 with</span></span>
+<span id="cb15-70"><a href="#cb15-70" tabindex="-1"></a><span class="co">#&gt;   care. (The first two tests and GRIM are not affected.)</span></span>
+<span id="cb15-71"><a href="#cb15-71" tabindex="-1"></a><span class="co">#&gt; ℹ The next version of scrutiny will provide a fix. Many apologies.</span></span>
+<span id="cb15-72"><a href="#cb15-72" tabindex="-1"></a><span class="co">#&gt; ℹ For more information, see &lt;https://github.com/lhdjung/scrutiny/issues/80&gt;</span></span>
+<span id="cb15-73"><a href="#cb15-73" tabindex="-1"></a><span class="co">#&gt; False-positive GRIMMER results possible.</span></span>
+<span id="cb15-74"><a href="#cb15-74" tabindex="-1"></a><span class="co">#&gt; ! I became aware of a bug in the `grimmer*()` functions.</span></span>
+<span id="cb15-75"><a href="#cb15-75" tabindex="-1"></a><span class="co">#&gt; ✖ GRIMMER&#39;s test 3 can flag consistent values as inconsistent.</span></span>
+<span id="cb15-76"><a href="#cb15-76" tabindex="-1"></a><span class="co">#&gt; ✖ For now, please use `show_reason = TRUE` and interpret results of test 3 with</span></span>
+<span id="cb15-77"><a href="#cb15-77" tabindex="-1"></a><span class="co">#&gt;   care. (The first two tests and GRIM are not affected.)</span></span>
+<span id="cb15-78"><a href="#cb15-78" tabindex="-1"></a><span class="co">#&gt; ℹ The next version of scrutiny will provide a fix. Many apologies.</span></span>
+<span id="cb15-79"><a href="#cb15-79" tabindex="-1"></a><span class="co">#&gt; ℹ For more information, see &lt;https://github.com/lhdjung/scrutiny/issues/80&gt;</span></span>
+<span id="cb15-80"><a href="#cb15-80" tabindex="-1"></a><span class="co">#&gt; False-positive GRIMMER results possible.</span></span>
+<span id="cb15-81"><a href="#cb15-81" tabindex="-1"></a><span class="co">#&gt; ! I became aware of a bug in the `grimmer*()` functions.</span></span>
+<span id="cb15-82"><a href="#cb15-82" tabindex="-1"></a><span class="co">#&gt; ✖ GRIMMER&#39;s test 3 can flag consistent values as inconsistent.</span></span>
+<span id="cb15-83"><a href="#cb15-83" tabindex="-1"></a><span class="co">#&gt; ✖ For now, please use `show_reason = TRUE` and interpret results of test 3 with</span></span>
+<span id="cb15-84"><a href="#cb15-84" tabindex="-1"></a><span class="co">#&gt;   care. (The first two tests and GRIM are not affected.)</span></span>
+<span id="cb15-85"><a href="#cb15-85" tabindex="-1"></a><span class="co">#&gt; ℹ The next version of scrutiny will provide a fix. Many apologies.</span></span>
+<span id="cb15-86"><a href="#cb15-86" tabindex="-1"></a><span class="co">#&gt; ℹ For more information, see &lt;https://github.com/lhdjung/scrutiny/issues/80&gt;</span></span>
+<span id="cb15-87"><a href="#cb15-87" tabindex="-1"></a></span>
+<span id="cb15-88"><a href="#cb15-88" tabindex="-1"></a><span class="fu">write_doc_audit</span>(<span class="at">sample_output =</span> audit_grim,  <span class="at">name_test =</span> <span class="st">&quot;GRIM&quot;</span>)</span>
+<span id="cb15-89"><a href="#cb15-89" tabindex="-1"></a><span class="co">#&gt; #&#39; @section Summaries with `audit()`: There is an S3 method for `audit()`, so </span></span>
+<span id="cb15-90"><a href="#cb15-90" tabindex="-1"></a><span class="co">#&gt; #&#39;   you can call `audit()` following `grim_map()` to get a summary of </span></span>
+<span id="cb15-91"><a href="#cb15-91" tabindex="-1"></a><span class="co">#&gt; #&#39;   `grim_map()`&#39;s results. It is a tibble with a single row and these </span></span>
+<span id="cb15-92"><a href="#cb15-92" tabindex="-1"></a><span class="co">#&gt; #&#39;   columns -- </span></span>
+<span id="cb15-93"><a href="#cb15-93" tabindex="-1"></a><span class="co">#&gt; #&#39; </span></span>
+<span id="cb15-94"><a href="#cb15-94" tabindex="-1"></a><span class="co">#&gt; #&#39; 1. `incons_cases`: number of GRIM-inconsistent value sets.</span></span>
+<span id="cb15-95"><a href="#cb15-95" tabindex="-1"></a><span class="co">#&gt; #&#39; 2. `all_cases`: total number of value sets.</span></span>
+<span id="cb15-96"><a href="#cb15-96" tabindex="-1"></a><span class="co">#&gt; #&#39; 3. `incons_rate`: proportion of GRIM-inconsistent value sets.</span></span>
+<span id="cb15-97"><a href="#cb15-97" tabindex="-1"></a><span class="co">#&gt; #&#39; 4. `mean_grim_prob`: </span></span>
+<span id="cb15-98"><a href="#cb15-98" tabindex="-1"></a><span class="co">#&gt; #&#39; 5. `incons_to_prob`: </span></span>
+<span id="cb15-99"><a href="#cb15-99" tabindex="-1"></a><span class="co">#&gt; #&#39; 6. `testable_cases`: </span></span>
+<span id="cb15-100"><a href="#cb15-100" tabindex="-1"></a><span class="co">#&gt; #&#39; 7. `testable_rate`:</span></span>
+<span id="cb15-101"><a href="#cb15-101" tabindex="-1"></a></span>
+<span id="cb15-102"><a href="#cb15-102" tabindex="-1"></a><span class="fu">write_doc_audit</span>(<span class="at">sample_output =</span> audit_grimmer, <span class="at">name_test =</span> <span class="st">&quot;GRIMMER&quot;</span>)</span>
+<span id="cb15-103"><a href="#cb15-103" tabindex="-1"></a><span class="co">#&gt; #&#39; @section Summaries with `audit()`: There is an S3 method for `audit()`, so </span></span>
+<span id="cb15-104"><a href="#cb15-104" tabindex="-1"></a><span class="co">#&gt; #&#39;   you can call `audit()` following `grimmer_map()` to get a summary of </span></span>
+<span id="cb15-105"><a href="#cb15-105" tabindex="-1"></a><span class="co">#&gt; #&#39;   `grimmer_map()`&#39;s results. It is a tibble with a single row and these </span></span>
+<span id="cb15-106"><a href="#cb15-106" tabindex="-1"></a><span class="co">#&gt; #&#39;   columns -- </span></span>
+<span id="cb15-107"><a href="#cb15-107" tabindex="-1"></a><span class="co">#&gt; #&#39; </span></span>
+<span id="cb15-108"><a href="#cb15-108" tabindex="-1"></a><span class="co">#&gt; #&#39; 1. `incons_cases`: number of GRIMMER-inconsistent value sets.</span></span>
+<span id="cb15-109"><a href="#cb15-109" tabindex="-1"></a><span class="co">#&gt; #&#39; 2. `all_cases`: total number of value sets.</span></span>
+<span id="cb15-110"><a href="#cb15-110" tabindex="-1"></a><span class="co">#&gt; #&#39; 3. `incons_rate`: proportion of GRIMMER-inconsistent value sets.</span></span>
+<span id="cb15-111"><a href="#cb15-111" tabindex="-1"></a><span class="co">#&gt; #&#39; 4. `fail_grim`: </span></span>
+<span id="cb15-112"><a href="#cb15-112" tabindex="-1"></a><span class="co">#&gt; #&#39; 5. `fail_test1`: </span></span>
+<span id="cb15-113"><a href="#cb15-113" tabindex="-1"></a><span class="co">#&gt; #&#39; 6. `fail_test2`: </span></span>
+<span id="cb15-114"><a href="#cb15-114" tabindex="-1"></a><span class="co">#&gt; #&#39; 7. `fail_test3`:</span></span></code></pre></div>
 <p>This function prepares a roxygen2 block section. It fills the three
 standard columns out for you, and it leaves space to describe any other
 columns there might be. Also, the internal checks of
